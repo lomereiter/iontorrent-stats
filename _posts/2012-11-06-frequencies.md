@@ -33,7 +33,7 @@ plotErrorTypeRatio <- function() {
 plotErrorTypeFrequency()
 {% endhighlight %}
 
-![center](iontorrent-stats/figures/2012-11-06-frequencies_rmd/frequencies.png) 
+![center](figures/2012-11-06-frequencies_rmd/frequencies.png) 
 
 
 
@@ -41,5 +41,5 @@ plotErrorTypeFrequency()
 plotErrorTypeRatio()
 {% endhighlight %}
 
-![center](iontorrent-stats/figures/2012-11-06-frequencies_rmd/ratio.png) 
+![center](figures/2012-11-06-frequencies_rmd/ratio.png) 
 
