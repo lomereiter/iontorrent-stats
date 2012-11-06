@@ -1,5 +1,6 @@
 auto: true
 markdown: rdiscount
-permalink: iontorrent-stats/:year/:month/:day/:title
+root: /iontorrent-stats
+permalink: /:year/:month/:day/:title
 rdiscount extensions: [smart]
 pygments: true
