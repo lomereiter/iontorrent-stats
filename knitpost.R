@@ -1,4 +1,4 @@
-KnitPost <- function(input, base.url = "/") {
+KnitPost <- function(input, base.url = "iontorrent-stats/") {
     require(knitr)
     opts_knit$set(base.url = base.url)
     fig.path <- paste0("figures/", sub(".Rmd$", "", basename(input)), "/")
