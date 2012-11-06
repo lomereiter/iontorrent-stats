@@ -1,5 +1,5 @@
 ---
-layout: layout
+layout: post
 title: Frequencies of error types along the length of a read
 ---
 
