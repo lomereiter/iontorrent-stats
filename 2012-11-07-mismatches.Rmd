@@ -1,0 +1,33 @@
+---
+layout: post
+title: Mismatches
+---
+
+```{r setup, message=FALSE}
+
+library(lattice)
+library(data.table)
+load("~/Dropbox/Public/iontorrent-stats/data/mismatches.RData")
+
+print(head(mismatches))
+
+homs <- data.table(read.table("_data/homopolymers.dat", header=T))
+
+intensity.counts <- homs[, list(total=sum(length * count)), by=intensity]
+setkey(intensity.counts, "intensity")
+```
+
+### Mismatch frequency as a function of intensity
+
+```{r mismatchfreq}
+mismatch.counts <- mismatches[, list(mismatches=nrow(.SD)), by=intensity]
+mismatch.counts$intensity <- mismatch.counts$intensity * 100
+
+xyplot(I(mismatches / total) ~ I(intensity / 100),
+       intensity.counts[mismatch.counts][intensity < 550],
+       pch=19,
+       col="#00DDFF",
+       scales=list(x=list(at=seq(0.5, 5.5, 10))),
+       xlab="Signal intensity",
+       ylab="Mismatch frequency")
+```
