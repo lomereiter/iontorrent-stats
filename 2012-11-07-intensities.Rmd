@@ -11,6 +11,8 @@ title: Intensity distribution
     print(head(homs))
 ```
 
+### Signal intensity distribution
+
 ```{r intensities}
     intensity.counts <- homs[, list(n=sum(length * count)), by=intensity]
 
@@ -21,4 +23,17 @@ title: Intensity distribution
              prob=T,
              main="Intensity distribution",
              xaxp=c(0.5, 11.5, 22))
+```
+
+### Homopolymer length distribution
+
+```{r lengths}
+    len.dist <- homs[, list(n=sum(count)), by=length]
+    print(len.dist)
+
+    len.dist.lm <- lm(log(n) ~ length, len.dist)
+    print(summary(len.dist.lm))
+
+    plot(log(n) ~ length, len.dist)
+    abline(len.dist.lm)
 ```
