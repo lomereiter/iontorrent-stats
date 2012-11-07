@@ -27,7 +27,7 @@ xyplot(I(mismatches / total) ~ I(intensity / 100),
        intensity.counts[mismatch.counts][intensity < 550],
        pch=19,
        col="#00DDFF",
-       scales=list(x=list(at=seq(0.5, 5.5, 10))),
+       scales=list(x=list(at=seq(0.5, 5.5, 0.5))),
        xlab="Signal intensity",
        ylab="Mismatch frequency")
 ```

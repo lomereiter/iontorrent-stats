@@ -45,7 +45,7 @@ mismatch.counts$intensity <- mismatch.counts$intensity * 100
 
 xyplot(I(mismatches/total) ~ I(intensity/100), intensity.counts[mismatch.counts][intensity < 
     550], pch = 19, col = "#00DDFF", scales = list(x = list(at = seq(0.5, 5.5, 
-    10))), xlab = "Signal intensity", ylab = "Mismatch frequency")
+    0.5))), xlab = "Signal intensity", ylab = "Mismatch frequency")
 {% endhighlight %}
 
 ![center](/iontorrent-stats/figures/2012-11-07-mismatches/mismatchfreq.png) 
