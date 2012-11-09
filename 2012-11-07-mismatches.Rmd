@@ -31,3 +31,13 @@ xyplot(I(mismatches / total) ~ I(intensity / 100),
        xlab="Signal intensity",
        ylab="Mismatch frequency")
 ```
+
+```{r logmismatchfreq}
+xyplot(I(log(mismatches / total)) ~ I(intensity / 100),
+       intensity.counts[mismatch.counts],
+       pch=19,
+       col="#00DDFF",
+       scales=list(x=list(at=seq(0.5, 11.5, 0.5))),
+       xlab="Signal intensity",
+       ylab=expression("ln" ~~ bgroup("(", "mismatch frequency", ")")))
+```

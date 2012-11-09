@@ -4,6 +4,7 @@ KnitPost <- function(input, base.url = "/") {
     fig.path <- paste0("figures/", sub(".Rmd$", "", basename(input)), "/")
     opts_chunk$set(fig.path = fig.path)
     opts_chunk$set(fig.cap = "center")
+    opts_chunk$set(fig.width = 10)
     render_jekyll()
     knit(input, envir = parent.frame())
 }

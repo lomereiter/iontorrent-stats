@@ -50,3 +50,14 @@ xyplot(I(mismatches/total) ~ I(intensity/100), intensity.counts[mismatch.counts]
 
 ![center](/iontorrent-stats/figures/2012-11-07-mismatches/mismatchfreq.png) 
 
+
+
+{% highlight r %}
+xyplot(I(log(mismatches/total)) ~ I(intensity/100), intensity.counts[mismatch.counts], 
+    pch = 19, col = "#00DDFF", scales = list(x = list(at = seq(0.5, 11.5, 0.5))), 
+    xlab = "Signal intensity", ylab = expression("ln" ~ ~bgroup("(", "mismatch frequency", 
+        ")")))
+{% endhighlight %}
+
+![center](/iontorrent-stats/figures/2012-11-07-mismatches/logmismatchfreq.png) 
+
