@@ -4,27 +4,27 @@ title: Basic read characteristics
 ---
 
 ```{r setup}
-    library(lattice)
+library(lattice)
 ```
 
 ### Read length distribution
 
 ```{r lengthdistribution}
-    counts <- read.table("_data/counts.dat", header=T)
-    len <- nrow(counts)
-    reads.num <- with(counts, reads[1:len-1] - reads[2:len])
-    
-    xyplot(reads.num ~ I(counts$offset + 1), 
-           xlab="Read length, bp",
-           ylab="Number of reads",
-           pch=19)
+counts <- read.table("_data/counts.dat", header=T)
+len <- nrow(counts)
+reads.num <- with(counts, reads[1:len-1] - reads[2:len])
+
+xyplot(reads.num ~ I(counts$offset + 1), 
+       xlab="Read length, bp",
+       ylab="Number of reads",
+       pch=19)
 ```
 
 ### Average read base quality as a function of offset from the beginning
 
 ```{r baseq}
-    data <- read.table("_data/baseq.dat", header=T) 
-    xyplot(bq.mean ~ pos, data,
-           xlab="Offset, bp",
-           ylab="Average base quality (phred-scaled)")
+data <- read.table("_data/baseq.dat", header=T) 
+xyplot(bq.mean ~ pos, data,
+       xlab="Offset, bp",
+       ylab="Average base quality (phred-scaled)")
 ```

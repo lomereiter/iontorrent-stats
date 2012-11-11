@@ -65,17 +65,17 @@ plotIntensityDistribution <- function(df) {
 
 ### Overall picture
 ```{r overall}
-    plotIntensityDistribution(intensity.counts)
+plotIntensityDistribution(intensity.counts)
 ```
 
 ### Short homopolymers (1-2 bases)
 ```{r short}
-    plotIntensityDistribution(intensity.counts[intensity < 250])
+plotIntensityDistribution(intensity.counts[intensity < 250])
 ```
 
 ### Long homopolymers (>2 bases)
 ```{r long}
-    plotIntensityDistribution(intensity.counts[intensity >= 250])
+plotIntensityDistribution(intensity.counts[intensity >= 250])
 ```
 
 ## Noticeably abnormal things about BAM data:
@@ -86,7 +86,7 @@ plotIntensityDistribution <- function(df) {
 
 * Peaks/pits at intensities 1.00, 2.00, etc.:
 ```{r length1}
-    plotIntensityDistribution(homs[length == 1 & intensity < 150, 
-                                   list(n=sum(count)), 
-                                   by=list(intensity, base)])
+plotIntensityDistribution(homs[length == 1 & intensity < 150, 
+                               list(n=sum(count)), 
+                               by=list(intensity, base)])
 ```

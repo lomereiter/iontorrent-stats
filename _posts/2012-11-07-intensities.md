@@ -8,7 +8,7 @@ title: Intensity distribution
 library(data.table)
 library(weights)
 
-homs <- data.table(read.table("_data/homopolymers.dat", header = T))
+homs <- data.table(read.table("_data/homopolymers.dat", header=T))
 print(head(homs))
 {% endhighlight %}
 
@@ -29,11 +29,15 @@ print(head(homs))
 
 
 {% highlight r %}
-intensity.counts <- homs[, list(n = sum(length * count)), by = intensity]
+intensity.counts <- homs[, list(n=sum(length * count)), by=intensity]
 
-wtd.hist(intensity.counts$intensity/100, weight = intensity.counts$n, breaks = seq(0, 
-    12, 0.05), xlab = "Signal intensity", prob = T, main = "Intensity distribution", 
-    xaxp = c(0.5, 11.5, 22))
+wtd.hist(intensity.counts$intensity / 100,
+         weight=intensity.counts$n,
+         breaks=seq(0, 12, 0.05),
+         xlab="Signal intensity", 
+         prob=T,
+         main="Intensity distribution",
+         xaxp=c(0.5, 11.5, 22))
 {% endhighlight %}
 
 ![center](/iontorrent-stats/figures/2012-11-07-intensities/intensities.png) 
@@ -43,7 +47,7 @@ wtd.hist(intensity.counts$intensity/100, weight = intensity.counts$n, breaks = s
 
 
 {% highlight r %}
-len.dist <- homs[, list(n = sum(count)), by = length]
+len.dist <- homs[, list(n=sum(count)), by=length]
 print(len.dist)
 {% endhighlight %}
 

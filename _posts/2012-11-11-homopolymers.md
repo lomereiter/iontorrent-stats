@@ -24,11 +24,17 @@ library(ggplot2)
 {% highlight r %}
 library(data.table)
 
-refhoms <- data.table(read.table("_data/referencehomopolymers.dat", header = T))
+refhoms <- data.table(read.table("_data/referencehomopolymers.dat", header=T))
 
-ggplot(data = refhoms, aes(x = factor(len), y = log10(count), fill = factor(nuc, 
-    c("a", "t", "g", "c")))) + geom_bar() + theme_bw() + xlab("Homopolymer length") + 
-    ylab(expression("lg" ~ ~bgroup("(", "number of homopolymers", ")"))) + labs(fill = "Nucleotide")
+ggplot(data=refhoms, 
+       aes(x=factor(len), 
+           y=log10(count), 
+           fill=factor(nuc, c('a', 't', 'g', 'c')))) +
+geom_bar() +
+theme_bw() +
+xlab("Homopolymer length") +
+ylab(expression("lg" ~~ bgroup("(", "number of homopolymers", ")"))) +
+labs(fill="Nucleotide")
 {% endhighlight %}
 
 ![center](/iontorrent-stats/figures/2012-11-11-homopolymers/referencehoms.png) 
@@ -39,7 +45,7 @@ to A/T bases occur about twice more often than those related to G/C:
 
 
 {% highlight r %}
-print(refhoms[, list(mean = weighted.mean(len, count)), by = nuc])
+print(refhoms[, list(mean=weighted.mean(len, count)), by=nuc])
 {% endhighlight %}
 
 
@@ -68,8 +74,8 @@ the number of such flow base calls is counted.
 library(lattice)
 library(data.table)
 
-homs <- data.table(read.table("_data/homopolymers.dat", header = T))
-homs[, `:=`(base, factor(base, c("T", "C", "A", "G")))]
+homs <- data.table(read.table("_data/homopolymers.dat", header=T))
+homs[, base := factor(base, c('T', 'C', 'A', 'G'))]
 {% endhighlight %}
 
 
@@ -93,26 +99,7 @@ homs[, `:=`(base, factor(base, c("T", "C", "A", "G")))]
 
 {% highlight r %}
 
-print(head(homs))
-{% endhighlight %}
-
-
-
-{% highlight text %}
-##    base length intensity  count
-## 1:    A      1        51 411172
-## 2:    A      1        52 240347
-## 3:    A      1        53 129832
-## 4:    A      1        54 134885
-## 5:    A      1        55 146169
-## 6:    A      1        56 162345
-{% endhighlight %}
-
-
-
-{% highlight r %}
-
-intensity.counts <- homs[, list(n = sum(count)), by = list(intensity, base)]
+intensity.counts <- homs[, list(n=sum(count)), by=list(intensity, base)]
 
 print(head(intensity.counts))
 {% endhighlight %}
@@ -134,8 +121,12 @@ print(head(intensity.counts))
 {% highlight r %}
 
 plotIntensityDistribution <- function(df) {
-    xyplot(n ~ I(intensity/100) | base, df, xlab = "Signal intensity", ylab = "Number of flow base calls", 
-        type = "h", layout = c(2, 2))
+    xyplot(n ~ I(intensity / 100) | base, 
+           df,
+           xlab="Signal intensity",
+           ylab="Number of flow base calls",
+           type='h',
+           layout=c(2,2))
 }
 {% endhighlight %}
 
@@ -176,8 +167,9 @@ plotIntensityDistribution(intensity.counts[intensity >= 250])
 * Peaks/pits at intensities 1.00, 2.00, etc.:
 
 {% highlight r %}
-plotIntensityDistribution(homs[length == 1 & intensity < 150, list(n = sum(count)), 
-    by = list(intensity, base)])
+plotIntensityDistribution(homs[length == 1 & intensity < 150, 
+                               list(n=sum(count)), 
+                               by=list(intensity, base)])
 {% endhighlight %}
 
 ![center](/iontorrent-stats/figures/2012-11-11-homopolymers/length1.png) 

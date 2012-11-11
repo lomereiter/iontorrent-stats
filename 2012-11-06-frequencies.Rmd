@@ -11,18 +11,18 @@ counts <- data.table(read.table("_data/counts.dat", header=T))
 ```
 
 ```{r frequencies}
-    xyplot(I(mismatches/reads) + I(insertions/reads) + I(deletions/reads) ~ offset, 
-           counts[mismatches > 0 | insertions > 0 | deletions > 0], 
-           key=simpleKey(c("Mismatches", "Insertions", "Deletions")), 
-           pch=19, 
-           xlab="Offset, bp",
-           ylab="Error frequencies")
+xyplot(I(mismatches/reads) + I(insertions/reads) + I(deletions/reads) ~ offset, 
+       counts[mismatches > 0 | insertions > 0 | deletions > 0], 
+       key=simpleKey(c("Mismatches", "Insertions", "Deletions")), 
+       pch=19, 
+       xlab="Offset, bp",
+       ylab="Error frequencies")
 ```
 
 ```{r ratio}
-    xyplot(I((insertions + deletions) / mismatches) ~ offset,
-           counts[mismatches > 0],
-           pch=19,
-           xlab="Offset, bp",
-           ylab="Indel/mismatch ratio")
+xyplot(I((insertions + deletions) / mismatches) ~ offset,
+       counts[mismatches > 0],
+       pch=19,
+       xlab="Offset, bp",
+       ylab="Indel/mismatch ratio")
 ```
