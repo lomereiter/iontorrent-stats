@@ -49,8 +49,6 @@ library(data.table)
 homs <- data.table(read.table("_data/homopolymers.dat", header=T))
 homs[, base := factor(base, c('T', 'C', 'A', 'G'))]
 
-print(head(homs))
-
 intensity.counts <- homs[, list(n=sum(count)), by=list(intensity, base)]
 
 print(head(intensity.counts))
