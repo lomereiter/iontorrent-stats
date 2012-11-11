@@ -1,0 +1,94 @@
+---
+layout: post
+title: Homopolymer distribution
+---
+
+## Reference sequence (E. coli MG1655)
+
+For the next section to be meaningful, let's first assess reference sequence
+homopolymer distribution.
+
+```{r referencehoms}
+library(ggplot2)
+library(data.table)
+
+refhoms <- data.table(read.table("_data/referencehomopolymers.dat", header=T))
+
+ggplot(data=refhoms, 
+       aes(x=factor(len), 
+           y=log10(count), 
+           fill=factor(nuc, c('a', 't', 'g', 'c')))) +
+geom_bar() +
+theme_bw() +
+xlab("Homopolymer length") +
+ylab(expression("lg" ~~ bgroup("(", "number of homopolymers", ")"))) +
+labs(fill="Nucleotide")
+```
+
+Average homopolymer lengths for different nucleotides explain why indels related
+to A/T bases occur about twice more often than those related to G/C:
+
+```{r averagelengths}
+print(refhoms[, list(mean=weighted.mean(len, count)), by=nuc])
+```
+
+## BAM data
+
+The file `homopolymers.dat` contains information about flow base calls,
+i.e. how many times each homopolymer was called from raw flow intensity data.
+That is, for each read, called bases are matched with corresponding 
+flow intensities, and for each possible combination of nucleotide, called length, and 
+intensity value (which is stored as an integer equal to 
+`round(100.0 * normalized signal intensity)` in BAM file)
+the number of such flow base calls is counted.
+
+```{r setup}
+library(lattice)
+library(data.table)
+
+homs <- data.table(read.table("_data/homopolymers.dat", header=T))
+homs[, base := factor(base, c('T', 'C', 'A', 'G'))]
+
+print(head(homs))
+
+intensity.counts <- homs[, list(n=sum(count)), by=list(intensity, base)]
+
+print(head(intensity.counts))
+
+plotIntensityDistribution <- function(df) {
+    xyplot(n ~ I(intensity / 100) | base, 
+           df,
+           xlab="Signal intensity",
+           ylab="Number of flow base calls",
+           type='h',
+           layout=c(2,2))
+}
+```
+
+### Overall picture
+```{r overall}
+    plotIntensityDistribution(intensity.counts)
+```
+
+### Short homopolymers (1-2 bases)
+```{r short}
+    plotIntensityDistribution(intensity.counts[intensity < 250])
+```
+
+### Long homopolymers (>2 bases)
+```{r long}
+    plotIntensityDistribution(intensity.counts[intensity >= 250])
+```
+
+## Noticeably abnormal things about BAM data:
+
+* None of flow base calls has intensity equal to 0.50, 1.50, 2.50, etc.
+  In fact, that holds not only for those flow intensities from which 
+  read bases were actually called, but for all of them.
+
+* Peaks/pits at intensities 1.00, 2.00, etc.:
+```{r length1}
+    plotIntensityDistribution(homs[length == 1 & intensity < 150, 
+                                   list(n=sum(count)), 
+                                   by=list(intensity, base)])
+```
