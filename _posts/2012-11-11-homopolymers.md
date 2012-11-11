@@ -168,7 +168,7 @@ plotIntensityDistribution(intensity.counts[intensity >= 250])
 
 {% highlight r %}
 plotIntensityDistribution(homs[length == 1 & intensity < 150, 
-                               list(n=sum(count)), 
+                               list(n=count),
                                by=list(intensity, base)])
 {% endhighlight %}
 
