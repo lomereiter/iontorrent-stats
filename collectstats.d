@@ -9,6 +9,7 @@ import std.stdio;
 
 import columnstats;
 import offsetstats;
+import flowstats;
 
 void printUsage() {
     stderr.writeln("usage: ./collectstats <input.bam>");
@@ -30,6 +31,7 @@ void main(string[] args) {
 
     auto column_stats_printer = new ColumnStatsPrinter("columns.dat");
     auto offset_stats_accumulator = new OffsetStatsAccumulator();
+    auto flow_stats_accumulator = new FlowStatsAccumulator();
 
     foreach (column; makePileup(bam.reads, true))
     {
@@ -48,8 +50,10 @@ void main(string[] args) {
             auto baseinfo = baseinfo_buf[0 .. i];
 
             offset_stats_accumulator.updateStatistics(baseinfo);
+            flow_stats_accumulator.updateStatistics(baseinfo);
         }
     }
 
-    offset_stats_accumulator.printReport("offsets2.dat");
+    offset_stats_accumulator.printReport("offsets.dat");
+    flow_stats_accumulator.printReport("flows.dat");
 }
