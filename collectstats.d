@@ -20,9 +20,13 @@ void main(string[] args) {
     if (args.length < 2) {
         printUsage();
     }
+
     auto filename = args[1];
 
     auto bam = new BamReader(filename);
+    auto rg = bam.header.read_groups.values.front;
+    auto flow_order = rg.flow_order;
+    auto key_sequence = rg.key_sequence;
 
     auto column_stats_printer = new ColumnStatsPrinter("columns.dat");
     auto offset_stats_accumulator = new OffsetStatsAccumulator();
@@ -30,8 +34,22 @@ void main(string[] args) {
     foreach (column; makePileup(bam.reads, true))
     {
         column_stats_printer.printColumn(column);
-        offset_stats_accumulator.updateStatistics(column);
+
+        foreach (read; column.reads_starting_here)
+        {
+            auto bases = basesWith!("FZ", "MD")(read, arg!"flowOrder"(flow_order), 
+                                                      arg!"keySequence"(key_sequence));
+
+            typeof(bases.front)[1024] baseinfo_buf = void;
+            size_t i;
+            foreach (info; bases)
+                baseinfo_buf[i++] = info;
+
+            auto baseinfo = baseinfo_buf[0 .. i];
+
+            offset_stats_accumulator.updateStatistics(baseinfo);
+        }
     }
 
-    offset_stats_accumulator.printReport("offsets.dat");
+    offset_stats_accumulator.printReport("offsets2.dat");
 }

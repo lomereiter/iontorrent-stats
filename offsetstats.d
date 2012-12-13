@@ -2,6 +2,7 @@ module offsetstats;
 
 import std.stdio;
 import std.array;
+import std.math : abs;
 
 class OffsetStatsAccumulator {
 
@@ -37,55 +38,31 @@ class OffsetStatsAccumulator {
             }
         }
     }
-    
-    void updateStatistics(Column)(Column column)
+
+    void updateStatistics(BaseInfo)(BaseInfo[] bases)
     {
-        foreach (read; column.reads)
+        _total_reads[0 .. bases.length - 1] += 1;
+
+        foreach (size_t offset, baseinfo; bases)
         {
-            if (read.query_offset == 0 && read.cigar_operation.is_reference_consuming)
+            if (baseinfo.cigar_operation.is_match_or_mismatch &&
+                baseinfo.reference_base != baseinfo.base)
             {
-                _total_reads[0 .. read.sequence_length - 1] += 1;
+                _mismatches_at[offset] += 1; 
+            }
+            
+            if (baseinfo.cigar_operation.type == 'I' && 
+                baseinfo.cigar_operation_offset == 0)
+            {
+                _insertions_starting_at[offset] += 1;
             }
 
-            switch (read.cigar_operation.type)
+            if (offset > 0 && 
+                (cast(long)baseinfo.position - cast(long)bases[offset - 1].position).abs > 1)
             {
-                case 'M', 'X':
-                    if (read.current_base != column.reference_base)
-                    {
-                        auto index = read.query_offset;
-                        if (read.is_reverse_strand)
-                            index = read.sequence_length - index - 1;
-                        _mismatches_at[index] += 1;
-                    }
-                    break;
-                case 'D':
-                    if (read.cigar_operation_offset == 0)
-                    {
-                        auto index = read.query_offset;
-                        if (read.is_reverse_strand)
-                        {
-                            index = read.sequence_length - index;
-                        }
-                        _deletions_before[index] += 1;
-                    }
-                    break;
-                default:
-                    break;
-            }
-
-            if (!read.cigar_before.empty && read.cigar_before.back.type == 'I')
-            {
-                if (read.cigar_operation_offset == 0)
-                {
-                    auto index = read.query_offset - read.cigar_before.back.length;
-                    if (read.is_reverse_strand)
-                    {
-                        index = read.sequence_length - read.query_offset;
-                    }
-                    _insertions_starting_at[index] += 1;
-                }
+                _deletions_before[offset] += 1;
             }
         }
     }
-}
 
+}
