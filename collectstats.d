@@ -7,9 +7,9 @@ import bio.core.tinymap;
 
 import std.stdio;
 
-import columnstats;
-import offsetstats;
-import flowstats;
+import printers.columnstats;
+import accumulators.offsetstats;
+import accumulators.flowstats;
 
 void printUsage() {
     stderr.writeln("usage: ./collectstats <input.bam>");

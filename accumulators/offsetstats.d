@@ -1,4 +1,4 @@
-module offsetstats;
+module accumulators.offsetstats;
 
 import std.stdio;
 import std.array;

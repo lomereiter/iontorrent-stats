@@ -1,4 +1,4 @@
-module columnstats;
+module printers.columnstats;
 
 import std.array;
 import std.stdio;

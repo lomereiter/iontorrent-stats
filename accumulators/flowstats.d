@@ -1,4 +1,4 @@
-module flowstats;
+module accumulators.flowstats;
 
 import bio.core.base;
 
