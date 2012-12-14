@@ -8,6 +8,7 @@ import bio.core.tinymap;
 import std.stdio;
 
 import printers.columnstats;
+import printers.insertioninfo;
 import accumulators.offsetstats;
 import accumulators.flowstats;
 
@@ -30,6 +31,7 @@ void main(string[] args) {
     auto key_sequence = rg.key_sequence;
 
     auto column_stats_printer = new ColumnStatsPrinter("columns.dat");
+    auto insertion_info_printer = new InsertionInfoPrinter("insertions.dat");
     auto offset_stats_accumulator = new OffsetStatsAccumulator();
     auto flow_stats_accumulator = new FlowStatsAccumulator();
 
@@ -48,6 +50,8 @@ void main(string[] args) {
                 baseinfo_buf[i++] = info;
 
             auto baseinfo = baseinfo_buf[0 .. i];
+
+            insertion_info_printer.printInsertions(baseinfo);
 
             offset_stats_accumulator.updateStatistics(baseinfo);
             flow_stats_accumulator.updateStatistics(baseinfo);
