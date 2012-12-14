@@ -12,13 +12,11 @@ class FlowStatsAccumulator
         uint[][][4] _distributions;
     }
 
-    this(uint max_length=16, uint max_intensity_value=2048)
+    this(uint max_length=16, uint max_intensity_value=1536)
     {
         foreach (nuc; 0 .. 4)
         {
-            _distributions[nuc].length = max_length;
-            foreach (ref dist; _distributions[nuc])
-                dist.length = max_intensity_value;
+            _distributions[nuc] = new uint[][](max_length, max_intensity_value);
         }
     }
 

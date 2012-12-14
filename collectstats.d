@@ -60,4 +60,7 @@ void main(string[] args) {
 
     offset_stats_accumulator.printReport("offsets.dat");
     flow_stats_accumulator.printReport("flows.dat");
+
+    insertion_info_printer.printNeighbourSummary("/dev/stdout");
+    insertion_info_printer.printOvercallsReport("overcall.intensities.dat");
 }
