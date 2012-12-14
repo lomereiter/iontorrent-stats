@@ -16,9 +16,9 @@ class InsertionInfoPrinter
         uint[] _neighbour_intensities; // inserted bases are from a single flow call
         ushort[][] _intensity_pairs;       // inserted bases are from two flow calls
         uint _total_insertions;
-        uint _insertions_of_type_1; // homopolymer-related of length 1
-        uint _insertions_of_type_2; // homopolymer-related of length 2
-        uint _insertions_of_type_3; // homopolymer-related of length 3
+        uint _insertions_of_type_1; // single overcall
+        uint _insertions_of_type_2; // 'orphan' call
+        uint _insertions_of_type_3; // two neighbor overcalls
         uint[] _orphan_intensities;     // calls of unexistent bases
 
         uint[] _intensities; // unifies all three types of errors
