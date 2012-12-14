@@ -7,10 +7,12 @@ import bio.core.tinymap;
 
 import std.stdio;
 
+import events.insertion;
 import printers.columnstats;
 import printers.insertioninfo;
 import accumulators.offsetstats;
 import accumulators.flowstats;
+import accumulators.insertionstats;
 
 void printUsage() {
     stderr.writeln("usage: ./collectstats <input.bam>");
@@ -32,8 +34,10 @@ void main(string[] args) {
 
     auto column_stats_printer = new ColumnStatsPrinter("columns.dat");
     auto insertion_info_printer = new InsertionInfoPrinter("insertions.dat");
+
     auto offset_stats_accumulator = new OffsetStatsAccumulator();
     auto flow_stats_accumulator = new FlowStatsAccumulator();
+    auto insertion_stats_accumulator = new InsertionStatsAccumulator();
 
     foreach (column; makePileup(bam.reads, true))
     {
@@ -51,7 +55,11 @@ void main(string[] args) {
 
             auto baseinfo = baseinfo_buf[0 .. i];
 
-            insertion_info_printer.printInsertions(baseinfo);
+            foreach (insertion; insertionEvents(baseinfo))
+            {
+                insertion_info_printer.printInsertion(insertion);
+                insertion_stats_accumulator.updateStatistics(insertion);
+            }
 
             offset_stats_accumulator.updateStatistics(baseinfo);
             flow_stats_accumulator.updateStatistics(baseinfo);
@@ -61,6 +69,6 @@ void main(string[] args) {
     offset_stats_accumulator.printReport("offsets.dat");
     flow_stats_accumulator.printReport("flows.dat");
 
-    insertion_info_printer.printNeighbourSummary("/dev/stdout");
-    insertion_info_printer.printOvercallsReport("overcall.intensities.dat");
+    insertion_stats_accumulator.printNeighbourSummary("/dev/stdout");
+    insertion_stats_accumulator.printOvercallsReport("overcall.intensities.dat");
 }
