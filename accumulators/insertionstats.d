@@ -128,8 +128,8 @@ class InsertionStatsAccumulator
     {
         auto _file = File(filename, "w+");
 
-        _file.writeln("# Typically, most insertion errors are due to homopolymer overcall");
-        _file.writeln("# Below is the signal intensity distribution of these flow calls");
+        _file.writeln("# intensity: signal intensity value for overcalled homopolymer");
+        _file.writeln("# count: number of overcalls with this intensity value");
 
         _file.writeln("intensity\tcount");
 
@@ -144,7 +144,7 @@ class InsertionStatsAccumulator
     {
         auto _file = File(filename, "w+");
 
-        _file.writeln("# Typically, aligner merges two neighboring overcalls into one insertion");
+        _file.writeln("# Usually aligner merges two neighboring overcalls into one insertion");
         _file.writeln("# because one insertion is 'cheaper' than two, in its view.");
         _file.writeln("# ");
         _file.writeln("# first: intensity of the first flow call");

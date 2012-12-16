@@ -6,13 +6,20 @@ import bio.core.base;
 import bio.core.tinymap;
 
 import std.stdio;
+import std.typetuple;
 
 import events.insertion;
+import events.deletion;
 import printers.columnstats;
 import printers.insertioninfo;
+//import printers.deletioninfo;
 import accumulators.offsetstats;
 import accumulators.flowstats;
 import accumulators.insertionstats;
+import accumulators.deletionstats;
+
+immutable collect_insertion_stats = false;
+immutable collect_deletion_stats = true;
 
 void printUsage() {
     stderr.writeln("usage: ./collectstats <input.bam>");
@@ -34,10 +41,12 @@ void main(string[] args) {
 
     auto column_stats_printer = new ColumnStatsPrinter("columns.dat");
     auto insertion_info_printer = new InsertionInfoPrinter("insertions.dat");
+//    auto deletion_info_printer = new DeletionInfoPrinter("deletions.dat");
 
     auto offset_stats_accumulator = new OffsetStatsAccumulator();
     auto flow_stats_accumulator = new FlowStatsAccumulator();
     auto insertion_stats_accumulator = new InsertionStatsAccumulator();
+    auto deletion_stats_accumulator = new DeletionStatsAccumulator();
 
     foreach (column; makePileup(bam.reads, true))
     {
@@ -45,8 +54,9 @@ void main(string[] args) {
 
         foreach (read; column.reads_starting_here)
         {
-            auto bases = basesWith!("FZ", "MD")(read, arg!"flowOrder"(flow_order), 
-                                                      arg!"keySequence"(key_sequence));
+            alias TypeTuple!("FZ", "MD", Option.mdNextOp) Options;
+            auto bases = basesWith!Options(read, arg!"flowOrder"(flow_order), 
+                                                 arg!"keySequence"(key_sequence));
 
             typeof(bases.front)[1024] baseinfo_buf = void;
             size_t i;
@@ -55,10 +65,22 @@ void main(string[] args) {
 
             auto baseinfo = baseinfo_buf[0 .. i];
 
-            foreach (insertion; insertionEvents(baseinfo))
+            if (collect_insertion_stats)
             {
-                insertion_info_printer.printInsertion(insertion);
-                insertion_stats_accumulator.updateStatistics(insertion);
+                foreach (insertion; insertionEvents(baseinfo))
+                {
+                    insertion_info_printer.printInsertion(insertion);
+                    insertion_stats_accumulator.updateStatistics(insertion);
+                }
+            }
+
+            if (collect_deletion_stats)
+            {
+                foreach (deletion; deletionEvents(baseinfo))
+                {
+            //        deletion_info_printer.printDeletion(deletion);
+                    deletion_stats_accumulator.updateStatistics(deletion);
+                }
             }
 
             offset_stats_accumulator.updateStatistics(baseinfo);
@@ -71,4 +93,6 @@ void main(string[] args) {
 
     insertion_stats_accumulator.printNeighbourSummary("/dev/stdout");
     insertion_stats_accumulator.printOvercallsReport("overcall.intensities.dat");
+
+    deletion_stats_accumulator.printOneSidedUndercallsReport("undercall.intensities.dat");
 }
