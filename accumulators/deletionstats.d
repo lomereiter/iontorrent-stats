@@ -45,7 +45,7 @@ class DeletionStatsAccumulator
             {
                 _neighbor_intensities[previous_flow_call.intensity_value] += 1;
             }
-            else if (!next_flow_call.isNull && next_flow_call.base == bases[0])
+            else if (next_flow_call.base == bases[0])
             {
                 _neighbor_intensities[next_flow_call.intensity_value] += 1;
             }
@@ -56,9 +56,6 @@ class DeletionStatsAccumulator
     {
         with (deletion)
         {
-            if (next_flow_call.isNull) 
-                return;
-
             if (previous_flow_call.base == bases.front && 
                 next_flow_call.base == bases.back)
             {

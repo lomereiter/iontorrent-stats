@@ -12,7 +12,7 @@ import events.insertion;
 import events.deletion;
 import printers.columnstats;
 import printers.insertioninfo;
-//import printers.deletioninfo;
+import printers.deletioninfo;
 import accumulators.offsetstats;
 import accumulators.flowstats;
 import accumulators.insertionstats;
@@ -41,7 +41,7 @@ void main(string[] args) {
 
     auto column_stats_printer = new ColumnStatsPrinter("columns.dat");
     auto insertion_info_printer = new InsertionInfoPrinter("insertions.dat");
-//    auto deletion_info_printer = new DeletionInfoPrinter("deletions.dat");
+    auto deletion_info_printer = new DeletionInfoPrinter("deletions.dat", flow_order);
 
     auto offset_stats_accumulator = new OffsetStatsAccumulator();
     auto flow_stats_accumulator = new FlowStatsAccumulator();
@@ -78,7 +78,9 @@ void main(string[] args) {
             {
                 foreach (deletion; deletionEvents(baseinfo))
                 {
-            //        deletion_info_printer.printDeletion(deletion);
+                    auto tmp = read["FZ"];
+                    auto intensities = *(cast(ushort[]*)(&tmp));
+                    deletion_info_printer.printDeletion(deletion, intensities);
                     deletion_stats_accumulator.updateStatistics(deletion);
                 }
             }

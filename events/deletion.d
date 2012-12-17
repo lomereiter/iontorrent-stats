@@ -4,20 +4,23 @@ import bio.bam.fz.flowcall;
 import bio.core.sequence;
 
 import std.typecons;
+import std.math;
 import std.algorithm;
 import std.range;
 
 struct Deletion(BaseInfo)
 {
+    // It is assumed that deletion is surrounded by two successful base calls.
     ReadFlowCall previous_flow_call;
-    Nullable!ReadFlowCall next_flow_call;
+    ReadFlowCall next_flow_call;
 
+    // FIXME: improve docs!
     size_t start_position; // position where the deletion starts
     size_t end_position; // position after the end of deletion
     size_t read_offset; // after which base the deletion occurred
 
     size_t length() @property const {
-        return end_position - start_position;
+        return (cast(long)end_position - cast(long)start_position).abs;
     }
 
     size_t number_of_homopolymers_in_deleted_sequence;
@@ -65,11 +68,14 @@ auto deletionEvents(BaseInfo)(BaseInfo[] bases)
                     result.end_position = base.position + length * (_reversed ? -1 : 1);
 
                     result.previous_flow_call = _bases[offset].flow_call;
-                    result.next_flow_call.nullify();
 
                     if (offset < _bases.length)
                     {
                         result.next_flow_call = _bases[offset + 1].flow_call;
+                    }
+                    else
+                    {
+                        continue;
                     }
 
                     auto res = dg(result);

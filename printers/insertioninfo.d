@@ -25,6 +25,7 @@ class InsertionInfoPrinter
 
     private void writeComments()
     {
+        // FIXME: clarify meaning of these numbers
         _out.writeln("# ref.pos: 1-based position on the reference");
         _out.writeln("# offset: 0-based offset from the read beginning");
 
@@ -34,21 +35,21 @@ class InsertionInfoPrinter
         _out.writeln("#           the previous base was called from");
 
         _out.writeln("# len: insertion length");
-        _out.writeln("# sequence: inserted sequence");
+        _out.writeln("# bases: inserted sequence");
 
         _out.writeln("# next: base called after the insertion");
         _out.writeln("# next.int: flow signal intensity of the next base");
         _out.writeln("# next.len: how many bases were called from the flowcall");
         _out.writeln("#           the next base was called from");
 
-        _out.writeln("# fc.num: number of flow calls in the inserted sequence");
-        _out.writeln("# intensities: comma-delimited list of flow call intensities");
+        _out.writeln("# hom: number of homopolymers in the inserted sequence");
+        _out.writeln("# ints: comma-delimited list of flow call intensities for these homopolymers");
     }
 
     private void writeHeader()
     {
-        _out.writeln("ref.pos\toffset\tprev\tprev.int\tprev.len\tlen\tsequence\t" ~
-                     "next\tnext.int\tnext.len\tfc.num\tintensities");
+        _out.writeln("ref.pos\toffset\tprev\tprev.int\tprev.len\tlen\tbases\t" ~
+                     "next\tnext.int\tnext.len\thom\tints");
     }
    
     private static void printNullableFlowcall(Nullable!ReadFlowCall flowcall, ref File file)
