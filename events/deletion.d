@@ -4,7 +4,6 @@ import bio.bam.fz.flowcall;
 import bio.core.sequence;
 
 import std.typecons;
-import std.math;
 import std.algorithm;
 import std.range;
 
@@ -14,13 +13,12 @@ struct Deletion(BaseInfo)
     ReadFlowCall previous_flow_call;
     ReadFlowCall next_flow_call;
 
-    // FIXME: improve docs!
-    size_t start_position; // position where the deletion starts
-    size_t end_position; // position after the end of deletion
-    size_t read_offset; // after which base the deletion occurred
+    size_t start_position; // 0-based position of first deleted base on the reference
+    size_t end_position; // 1-based position of last deleted base on the reference
+    size_t read_offset; // after which read base the deletion occurred
 
     size_t length() @property const {
-        return (cast(long)end_position - cast(long)start_position).abs;
+        return end_position - start_position;
     }
 
     size_t number_of_homopolymers_in_deleted_sequence;
@@ -50,10 +48,16 @@ auto deletionEvents(BaseInfo)(BaseInfo[] bases)
 
             foreach (size_t offset, base; _bases)
             {
+                if (base.cigar_operation_offset < base.cigar_operation.length - 1)
+                    continue;
+
                 if (base.next_md_operation.isNull)
                     continue;
 
-                if (base.cigar_operation_offset < base.cigar_operation.length - 1)
+                if (base.cigar_after.empty)
+                    continue;
+
+                if (base.cigar_after.front.type != 'D')
                     continue;
 
                 if (base.next_md_operation.is_deletion)
@@ -65,7 +69,13 @@ auto deletionEvents(BaseInfo)(BaseInfo[] bases)
                     result.read_offset = offset;
                     result.start_position = base.position;
                     auto length = base.next_md_operation.deletion.length;
-                    result.end_position = base.position + length * (_reversed ? -1 : 1);
+
+                    if (_reversed)
+                    {
+                        result.start_position -= (length - 1);
+                    }
+
+                    result.end_position = base.position + length;
 
                     result.previous_flow_call = _bases[offset].flow_call;
 

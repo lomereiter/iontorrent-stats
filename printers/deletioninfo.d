@@ -23,9 +23,8 @@ class DeletionInfoPrinter
 
     private void writeComments()
     {
-        // FIXME: clarify meaning of these numbers
-        _out.writeln("# ref.pos: 1-based position on the reference");
-        _out.writeln("# offset: 0-based offset from the read beginning");
+        _out.writeln("# ref.pos: 1-based position of the first deleted base on the reference");
+        _out.writeln("# offset: 0-based offset of the read base called before the deletion");
         
         _out.writeln("# prev: base called before the deletion");
         _out.writeln("# prev.int: flow signal intensity of the previous base");
@@ -54,7 +53,7 @@ class DeletionInfoPrinter
     {
         with (deletion)
         {
-            _out.write(start_position, '\t', read_offset, '\t',
+            _out.write(start_position + 1, '\t', read_offset, '\t',
                        previous_flow_call.base, '\t', 
                        previous_flow_call.intensity_value, '\t',
                        previous_flow_call.length, '\t',

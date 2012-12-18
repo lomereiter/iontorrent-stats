@@ -54,7 +54,7 @@ void main(string[] args) {
 
         foreach (read; column.reads_starting_here)
         {
-            alias TypeTuple!("FZ", "MD", Option.mdNextOp) Options;
+            alias TypeTuple!("FZ", "MD", Option.mdNextOp, Option.cigarExtra) Options;
             auto bases = basesWith!Options(read, arg!"flowOrder"(flow_order), 
                                                  arg!"keySequence"(key_sequence));
 
@@ -80,7 +80,9 @@ void main(string[] args) {
                 {
                     auto tmp = read["FZ"];
                     auto intensities = *(cast(ushort[]*)(&tmp));
+
                     deletion_info_printer.printDeletion(deletion, intensities);
+
                     deletion_stats_accumulator.updateStatistics(deletion);
                 }
             }
