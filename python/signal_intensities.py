@@ -4,7 +4,6 @@ from common import *
 @make_console_app
 def plot(in_fn, out_fn):
     data = csv2rec(in_fn, delimiter='\t')
-    data['intensity']
 
     counts = {}
     for record in data:
