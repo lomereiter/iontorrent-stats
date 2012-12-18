@@ -1,15 +1,7 @@
-# Plots frequency rates of mismatches, insertions, and deletions
-# as functions of offset from the read start
-import sys
+#!/usr/bin/env python
+from common import *
 
-import numpy as np
-import matplotlib.pyplot as plt
-
-from matplotlib.mlab import csv2rec
-
-def print_usage():
-    print("Usage: ", sys.argv[0], " <input.dat> <output.png>")
-
+@make_console_app
 def plot(in_fn, out_fn):
     data = csv2rec(in_fn, 
                    delimiter='\t',
@@ -29,12 +21,3 @@ def plot(in_fn, out_fn):
     plt.legend()
 
     plt.savefig(out_fn)
-
-if __name__ == "__main__":
-    if len(sys.argv) < 3:
-        print_usage()
-        sys.exit(0)
-
-    input = sys.argv[1]
-    output = sys.argv[2]
-    plot(input, output)
