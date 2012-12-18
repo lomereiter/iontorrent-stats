@@ -23,6 +23,9 @@ def plot(in_fn, out_fn):
     plt.plot(data['offset'], i_freq, 'r-', label="insertions")
     plt.plot(data['offset'], d_freq, 'g-', label="deletions")
 
+    plt.xlabel("Offset, bp")
+    plt.ylabel("Error frequencies")
+
     plt.legend()
 
     plt.savefig(out_fn)
