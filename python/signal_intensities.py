@@ -3,20 +3,16 @@ from common import *
 
 @make_console_app
 def plot(in_fn, out_fn):
-    data = csv2rec(in_fn, delimiter='\t')
+    data = rec_groupby(csv2rec(in_fn, delimiter='\t'),
+                       ('intensity', ),
+                       [('count', sum, 'count')])
 
-    counts = {}
-    for record in data:
-        if record[2] not in counts:
-            counts[record[2]] = 0
-        counts[record[2]] += record[3]
+    intensities = data['intensity'] / 100.0
 
-    intensities = np.sort(counts.keys())
-
-    plt.xticks(np.arange(0.5, np.max(intensities / 100.0)))
-    plt.hist(intensities / 100.0, 
+    plt.xticks(np.arange(0.5, np.max(intensities)))
+    plt.hist(intensities,
              bins=200, 
-             weights=[counts[int] for int in intensities],
+             weights=data['count'],
              normed=True)
 
     plt.xlabel('Signal intensity')

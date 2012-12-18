@@ -3,7 +3,7 @@ import sys
 import numpy as np
 import matplotlib.pyplot as plt
 
-from matplotlib.mlab import csv2rec
+from matplotlib.mlab import csv2rec, rec_groupby
 
 def make_console_app(fn):
     def print_usage():
