@@ -2,6 +2,7 @@ module accumulators.insertionstats;
 
 import std.stdio;
 
+// TODO: rewrite using approach similar to that of DeletionStatsAccumulator
 class InsertionStatsAccumulator
 {
     private

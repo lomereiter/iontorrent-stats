@@ -7,6 +7,8 @@ class DeletionStatsAccumulator
     private
     {
         size_t _n_deletions;
+        size_t _n_resolved; // likely to be caused solely by undercalls
+
         size_t _n_undercalls;
 
         uint[] _intensities; // undercall intensities
@@ -27,10 +29,22 @@ class DeletionStatsAccumulator
                 return;
 
             _n_undercalls += number_of_homopolymers_in_deleted_sequence;
+            ++_n_resolved;
 
             foreach (intensity; deleted_base_intensities)
                 _intensities[intensity] += 1;
         }
+    }
+
+    void printSummary(string filename)
+    {
+        auto _file = File(filename, "w+");
+
+        _file.writeln("# Number of deletions: ", _n_deletions);
+        _file.writeln("# Likely to be caused solely by undercalls: ", _n_resolved,
+                      " (", cast(double)_n_resolved * 100.0 / _n_deletions, "%)");
+
+        _file.writeln("# Number of undercalls: ", _n_undercalls);
     }
 
     void printUndercallsReport(string filename)
