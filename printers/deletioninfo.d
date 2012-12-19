@@ -9,13 +9,11 @@ class DeletionInfoPrinter
     private 
     {
         File _out;
-        string _flow_order;
     }
 
-    this(string filename, string flow_order)
+    this(string filename)
     {
         _out = File(filename, "w+");
-        _flow_order = flow_order;
 
         writeComments();
         writeHeader();
@@ -49,7 +47,7 @@ class DeletionInfoPrinter
                      "next\tnext.int\tnext.len\thom\tints");
     }
 
-    void printDeletion(Deletion)(/*const*/ ref Deletion deletion, ushort[] intensities)
+    void printDeletion(Deletion)(/*const*/ ref Deletion deletion)
     {
         with (deletion)
         {
@@ -64,45 +62,9 @@ class DeletionInfoPrinter
                        next_flow_call.length, '\t',
                        number_of_homopolymers_in_deleted_sequence, '\t');
 
-            auto unique_bases = bases.uniq();
-            assert(!unique_bases.empty);
-            auto current_base = unique_bases.front;
-            size_t j = 0;
-
-            ushort[1024] buf;
-            ushort[] deleted_base_intensities = void;
-            auto n = number_of_homopolymers_in_deleted_sequence;
-            if (n > 1024) // unlikely to happen
-                deleted_base_intensities = new ushort[n];
-            else
-                deleted_base_intensities = buf[0 .. n];
-
-            for (size_t i = previous_flow_call.flow_index;
-                        i <= next_flow_call.flow_index;
-                        i++)
+            if (deleted_base_intensities.length == number_of_homopolymers_in_deleted_sequence)
             {
-                if (_flow_order[i] == current_base)
-                {
-                    deleted_base_intensities[j++] = intensities[i];
-                    if (j == n)
-                    {
-                        break;
-                    }
-                    unique_bases.popFront();
-                    if (!unique_bases.empty)
-                    {
-                        current_base = unique_bases.front;
-                    }
-                    else
-                    {
-                        break;
-                    }
-                }
-            }
-
-            if (j == n)
-            {
-                _out.write(deleted_base_intensities.map!(to!string)().joiner(","));
+                _out.write(deleted_base_intensities.data.map!(to!string)().joiner(","));
             }
             else
             {

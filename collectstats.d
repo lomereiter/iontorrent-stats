@@ -11,14 +11,14 @@ import std.typetuple;
 import events.insertion;
 import events.deletion;
 import printers.columnstats;
-import printers.insertioninfo;
+//import printers.insertioninfo;
 import printers.deletioninfo;
 import accumulators.offsetstats;
 import accumulators.flowstats;
 import accumulators.insertionstats;
 import accumulators.deletionstats;
 
-immutable collect_insertion_stats = false;
+immutable collect_insertion_stats = true;
 immutable collect_deletion_stats = true;
 
 void printUsage() {
@@ -40,8 +40,7 @@ void main(string[] args) {
     auto key_sequence = rg.key_sequence;
 
     auto column_stats_printer = new ColumnStatsPrinter("columns.dat");
-    auto insertion_info_printer = new InsertionInfoPrinter("insertions.dat");
-    auto deletion_info_printer = new DeletionInfoPrinter("deletions.dat", flow_order);
+    auto deletion_info_printer = new DeletionInfoPrinter("deletions.dat");
 
     auto offset_stats_accumulator = new OffsetStatsAccumulator();
     auto flow_stats_accumulator = new FlowStatsAccumulator();
@@ -69,20 +68,18 @@ void main(string[] args) {
             {
                 foreach (insertion; insertionEvents(baseinfo))
                 {
-                    insertion_info_printer.printInsertion(insertion);
                     insertion_stats_accumulator.updateStatistics(insertion);
                 }
             }
 
             if (collect_deletion_stats)
             {
-                foreach (deletion; deletionEvents(baseinfo))
+                auto tmp = read["FZ"];
+                auto intensities = *(cast(ushort[]*)(&tmp));
+
+                foreach (deletion; deletionEvents(baseinfo, flow_order, intensities))
                 {
-                    auto tmp = read["FZ"];
-                    auto intensities = *(cast(ushort[]*)(&tmp));
-
-                    deletion_info_printer.printDeletion(deletion, intensities);
-
+                    deletion_info_printer.printDeletion(deletion);
                     deletion_stats_accumulator.updateStatistics(deletion);
                 }
             }
