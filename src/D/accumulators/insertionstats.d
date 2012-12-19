@@ -1,6 +1,7 @@
 module accumulators.insertionstats;
 
 import std.stdio;
+import std.range;
 
 class InsertionStatsAccumulator
 {
@@ -26,6 +27,9 @@ class InsertionStatsAccumulator
 
         with (insertion)
         {
+            auto has_left = !previous_flow_call.isNull;
+            auto has_right = !next_flow_call.isNull;
+
             if (number_of_flowcalls == 1)
             {
                 _n_resolved += 1;
@@ -33,9 +37,6 @@ class InsertionStatsAccumulator
             }
             else if (number_of_flowcalls == 2)
             {
-                auto has_left = !previous_flow_call.isNull;
-                auto has_right = !next_flow_call.isNull;
-
                 if ((has_left && previous_flow_call == first_flow_call) ||
                     (has_right && next_flow_call == last_flow_call))
                 {
@@ -45,7 +46,19 @@ class InsertionStatsAccumulator
                     _intensities[last_flow_call.intensity_value] += 1;
                 }
             }
-            // There are also cases like 2.61, .56, 1.53, which are not counted here.
+            else if (number_of_flowcalls == 3)
+            {
+                if ((has_left && previous_flow_call == first_flow_call) &&
+                    (has_right && next_flow_call == last_flow_call))
+                {
+                    _n_resolved += 1;
+
+                    _intensities[first_flow_call.intensity_value] += 1;
+                    _intensities[last_flow_call.intensity_value] += 1;
+                    _intensities[flowcalls.drop(1).front.intensity_value] += 1;
+                }
+            }
+            // There are also cases like 2.61, .56, .52, which are not counted here.
             // However, they are quite rare and don't influence the results
             // significantly. Overwhelming majority of insertions has length 1 or 2.
         }
