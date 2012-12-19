@@ -32,8 +32,8 @@ auto createPileupProcessor(Pileup)(Pileup pileup)
     return processor;
 }
 
-void printUsage() {
-    stderr.writeln("usage: ./collectstats [OPTIONS] <input.bam>");
+void printUsage(string prg_name) {
+    stderr.writeln("usage: ", prg_name, " [OPTIONS] <input.bam>");
     stderr.writeln();
     stderr.writeln("       BAM file must provide FZ, ZF, and MD tags");
     stderr.writeln();
@@ -68,7 +68,7 @@ int main(string[] args) {
                "no-column-stats|C",    &no_column_stats);
 
         if (args.length < 2) {
-            printUsage();
+            printUsage(args[0]);
             return 0;
         }
 
