@@ -89,6 +89,7 @@ void main(string[] args) {
     offset_stats_accumulator.printReport("offsets.dat");
     flow_stats_accumulator.printReport("flows.dat");
 
+    insertion_stats_accumulator.printSummary("/dev/stdout");
     insertion_stats_accumulator.printOvercallsReport("overcall.intensities.dat");
     deletion_stats_accumulator.printSummary("/dev/stdout");
     deletion_stats_accumulator.printUndercallsReport("undercall.intensities.dat");
