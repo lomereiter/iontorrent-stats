@@ -31,8 +31,14 @@ followed by a header line. They can be easily loaded into R via standard
 Directory `src/python` contains Python scripts for visualizing these
 files by means of Matplotlib library. 
 
+## License
+
+IonTorrent-Stats is distributed under GPLv2+ license.
+
 ## TODO
+
 * Collect mismatch statistics
+* Parallelize execution
 * Add more plot generation scripts
 * Add Python script for generating HTML pages (via Django templates)
 * Add `launch.sh` script for integration with Torrent Browser Plugin Store
