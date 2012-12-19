@@ -7,67 +7,33 @@ class DeletionStatsAccumulator
     private
     {
         size_t _n_deletions;
-        size_t _n_type1; // undercall of one homopolymer
-        size_t _n_type2; // undercall of two neighbor homopolymers
+        size_t _n_undercalls;
 
-        uint[] _neighbor_intensities;
-        ushort[][] _intensity_pairs; // neighboring undercalls
+        uint[] _intensities; // undercall intensities
     }
 
     this(size_t maximum_intensity_value=1536)
     {
-        _neighbor_intensities = new uint[maximum_intensity_value];
-        _intensity_pairs = new ushort[][](maximum_intensity_value, maximum_intensity_value);
+        _intensities = new uint[maximum_intensity_value];
     }
 
     void updateStatistics(Deletion)(Deletion deletion)
     {
         ++_n_deletions;
 
-        switch (deletion.number_of_homopolymers_in_deleted_sequence)
-        {
-            case 1:
-                handleType1(deletion);
-                break;
-            case 2:
-                handleType2(deletion);
-                break;
-            default:
-                break;
-        }
-    }
-
-    private void handleType1(Deletion)(Deletion deletion)
-    {
         with (deletion)
         {
-            if (previous_flow_call.base == bases[0])
-            {
-                _neighbor_intensities[previous_flow_call.intensity_value] += 1;
-            }
-            else if (next_flow_call.base == bases[0])
-            {
-                _neighbor_intensities[next_flow_call.intensity_value] += 1;
-            }
+            if (number_of_homopolymers_in_deleted_sequence != deleted_base_intensities.length)
+                return;
+
+            _n_undercalls += number_of_homopolymers_in_deleted_sequence;
+
+            foreach (intensity; deleted_base_intensities)
+                _intensities[intensity] += 1;
         }
     }
 
-    private void handleType2(Deletion)(Deletion deletion)
-    {
-        with (deletion)
-        {
-            if (previous_flow_call.base == bases.front && 
-                next_flow_call.base == bases.back)
-            {
-                auto left = previous_flow_call.intensity_value;
-                auto right = next_flow_call.intensity_value;
-
-                _intensity_pairs[left][right] += 1;
-            }
-        }
-    }
-
-    void printOneSidedUndercallsReport(string filename)
+    void printUndercallsReport(string filename)
     {
         auto _file = File(filename, "w+");
 
@@ -76,7 +42,7 @@ class DeletionStatsAccumulator
 
         _file.writeln("intensity\tcount");
 
-        foreach (size_t intensity, count; _neighbor_intensities)
+        foreach (size_t intensity, count; _intensities)
         {
             if (count > 0)
                 _file.writeln(intensity, '\t', count);

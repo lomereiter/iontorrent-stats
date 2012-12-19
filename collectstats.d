@@ -40,7 +40,6 @@ void main(string[] args) {
     auto key_sequence = rg.key_sequence;
 
     auto column_stats_printer = new ColumnStatsPrinter("columns.dat");
-    auto deletion_info_printer = new DeletionInfoPrinter("deletions.dat");
 
     auto offset_stats_accumulator = new OffsetStatsAccumulator();
     auto flow_stats_accumulator = new FlowStatsAccumulator();
@@ -79,7 +78,6 @@ void main(string[] args) {
 
                 foreach (deletion; deletionEvents(baseinfo, flow_order, intensities))
                 {
-                    deletion_info_printer.printDeletion(deletion);
                     deletion_stats_accumulator.updateStatistics(deletion);
                 }
             }
@@ -92,8 +90,6 @@ void main(string[] args) {
     offset_stats_accumulator.printReport("offsets.dat");
     flow_stats_accumulator.printReport("flows.dat");
 
-    insertion_stats_accumulator.printNeighbourSummary("/dev/stdout");
     insertion_stats_accumulator.printOvercallsReport("overcall.intensities.dat");
-
-    deletion_stats_accumulator.printOneSidedUndercallsReport("undercall.intensities.dat");
+    deletion_stats_accumulator.printUndercallsReport("undercall.intensities.dat");
 }
