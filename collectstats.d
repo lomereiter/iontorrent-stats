@@ -7,12 +7,11 @@ import bio.core.tinymap;
 
 import std.stdio;
 import std.typetuple;
+import std.algorithm;
 
 import events.insertion;
 import events.deletion;
 import printers.columnstats;
-//import printers.insertioninfo;
-import printers.deletioninfo;
 import accumulators.offsetstats;
 import accumulators.flowstats;
 import accumulators.insertionstats;

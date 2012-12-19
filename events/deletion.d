@@ -116,7 +116,10 @@ auto deletionEvents(BaseInfo)(BaseInfo[] bases, string flow_order, in ushort[] i
                 if (base.next_md_operation.is_deletion)
                 {
                     result.bases = base.next_md_operation.deletion;
-                    auto n = result.bases.uniq().walkLength();
+
+                    auto unique_bases = result.bases.uniq();
+                    auto n = unique_bases.walkLength();
+                    assert(n > 0);
                     result.number_of_homopolymers_in_deleted_sequence = n;
 
                     result.read_offset = offset;
@@ -144,10 +147,11 @@ auto deletionEvents(BaseInfo)(BaseInfo[] bases, string flow_order, in ushort[] i
                     result._deleted_base_intensities = SmallArray!(ushort, 8)(n);
                     ushort[] deleted_base_intensities = result._deleted_base_intensities.data;
 
-                    auto unique_bases = result.bases.uniq();
-                    assert(!unique_bases.empty);
                     auto current_base = unique_bases.front;
-                    size_t j = 0;
+                    size_t j = 0; // number of consumed homopolymers
+
+                    bool has_zero_intensity_calls = false;
+                    bool has_nonzero_intensity_calls = false;
 
                     for (size_t i = result.previous_flow_call.flow_index;
                                 i <= result.next_flow_call.flow_index;
@@ -155,21 +159,33 @@ auto deletionEvents(BaseInfo)(BaseInfo[] bases, string flow_order, in ushort[] i
                     {
                         if (_fo[i] == current_base)
                         {
+                            if (_ints[i] == 0)
+                            {
+                                has_zero_intensity_calls = true;
+                            }
+                            else if (!has_nonzero_intensity_calls)
+                            {
+                                has_nonzero_intensity_calls = true;
+                            }
+
                             deleted_base_intensities[j++] = _ints[i];
                             if (j == n)
                             {
                                 break;
                             }
                             unique_bases.popFront();
-                            if (!unique_bases.empty)
-                            {
-                                current_base = unique_bases.front;
-                            }
-                            else
-                            {
-                                break;
-                            }
+                            assert(!unique_bases.empty);
+                            current_base = unique_bases.front;
                         }
+                    }
+
+                    // If all intensity calls are 0, don't take this deletion
+                    // into account.
+                    // This heuristic works well on experimental data, i.e.
+                    // 0.00 intensity has almost the same frequency as 0.01.
+                    if (has_zero_intensity_calls && !has_nonzero_intensity_calls)
+                    {
+                        j = 0;
                     }
 
                     result._deleted_base_intensities.length = j;
