@@ -5,6 +5,9 @@ Tool for collecting various statistics about BAM files produced by
 recent versions of IonTorrent Suite.
 
 ## Installation
+
+[DMD](http://dlang.org/download) compiler must be installed in order to build the application.
+
 ```sh
 git clone --recursive https://github.com/lomereiter/iontorrent-stats
 cd iontorrent-stats
