@@ -15,6 +15,7 @@ make
 ```
 
 ## Usage
+
 ```sh
 ./build/iontorrent-stats <input.bam> -d <output directory>
 ```
@@ -23,11 +24,9 @@ make
 Output directory is automatically created if it doesn't exist.
 
 In case of successful execution, several tab-delimited files will be
-written to there. All of them start from description of variables and
-a header, and can be easily loaded into R via standard
-```R
-read.table(<report filename>, header=T)
-```
+written to there. All of them start with comments describing the variables,
+followed by a header line. They can be easily loaded into R via standard
+`read.table` function.
 
 Directory `src/python` contains Python scripts for visualizing these
 files by means of Matplotlib library. 
