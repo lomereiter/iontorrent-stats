@@ -1,2 +1,36 @@
-Exploring dataset [B7-295.bam](https://s3.amazonaws.com/iontorrent/datasets/B7-295/B7-295.bam.gz) 
-produced by IonTorrent 318 chip on August 26, 2012.
+IonTorrent-Stats
+================
+
+Tool for collecting various statistics about BAM files produced by
+recent versions of IonTorrent Suite.
+
+## Installation
+```sh
+git clone --recursive https://github.com/lomereiter/iontorrent-stats
+cd iontorrent-stats
+make
+```
+
+## Usage
+```sh
+./build/iontorrent-stats <input.bam> -d <output directory>
+```
+(Mapped reads in the BAM file must contain ZF, FZ, and MD tags.)
+
+Output directory is automatically created if it doesn't exist.
+
+In case of successful execution, several tab-delimited files will be
+written to there. All of them start from description of variables and
+a header, and can be easily loaded into R via standard
+```R
+read.table(<report filename>, header=T)
+```
+
+Directory `src/python` contains Python scripts for visualizing these
+files by means of Matplotlib library. 
+
+## TODO
+* Collect mismatch statistics
+* Add more plot generation scripts
+* Add Python script for generating HTML pages (via Django templates)
+* Add `launch.sh` script for integration with Torrent Browser Plugin Store
