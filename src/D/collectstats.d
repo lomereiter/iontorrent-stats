@@ -25,10 +25,11 @@ __gshared string key_sequence;
 
 __gshared string dir; // where to output reports
 
-auto createPileupProcessor(Pileup)(Pileup pileup, string column_stats_fn)
+auto createPileupProcessor(Pileup)(Pileup pileup, ulong id, string column_stats_fn)
 {
     auto processor = new PileupProcessor!Pileup(pileup);
 
+    processor.id = id;
     processor.flow_order = flow_order;
     processor.key_sequence = key_sequence;
 
@@ -135,8 +136,7 @@ int main(string[] args) {
                 auto id = pileup_and_id[1];
                 auto column_stats_fn = buildPath(dir, "columns"~to!string(id)~".dat");
 
-                auto processor = createPileupProcessor(pileup_and_id[0], column_stats_fn);
-                processor.settings.id = id;
+                auto processor = createPileupProcessor(pileup_and_id[0], id, column_stats_fn);
 
                 ////////////////////////////////////////////////////////////////////////////////////
                 ///                                 process pileup                                  
