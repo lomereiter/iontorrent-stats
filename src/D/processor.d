@@ -20,16 +20,16 @@ class PileupProcessor(Pileup)
     private 
     {
         Pileup _pileup;
-
-        bool _collect_column_stats;
-        bool _collect_deletion_stats;
-        bool _collect_insertion_stats;
-        bool _collect_flow_stats;
-        bool _collect_offset_stats;
     }
 
     public 
     {
+        bool collect_insertion_stats;
+        bool collect_deletion_stats;
+        bool collect_flow_stats;
+        bool collect_offset_stats;
+        bool collect_column_stats;
+            
         ColumnStatsPrinter column_stats_printer;
         OffsetStatsAccumulator offset_stats_accumulator;
         FlowStatsAccumulator flow_stats_accumulator;
@@ -72,74 +72,6 @@ class PileupProcessor(Pileup)
         return this; 
     }
 
-    bool collect_column_stats() @property const
-    {
-        return _collect_column_stats;
-    }
-
-    /// Only processor with id 0 prints comments and header
-    void collect_column_stats(bool collect) @property 
-    {
-        _collect_column_stats = collect;
-
-        if (collect && column_stats_printer is null)
-        {
-            column_stats_printer = new ColumnStatsPrinter(column_stats_filename, id == 0);
-        }
-    }
-
-    bool collect_offset_stats() @property const
-    {
-        return _collect_offset_stats;
-    }
-
-    void collect_offset_stats(bool collect) @property 
-    {
-        _collect_offset_stats = collect;
-
-        if (collect && offset_stats_accumulator is null)
-            offset_stats_accumulator = new OffsetStatsAccumulator();
-    }
-
-    bool collect_flow_stats() @property const
-    {
-        return _collect_flow_stats;
-    }
-
-    void collect_flow_stats(bool collect) @property 
-    {
-        _collect_flow_stats = collect;
-
-        if (collect && flow_stats_accumulator is null)
-            flow_stats_accumulator = new FlowStatsAccumulator();
-    }
-
-    bool collect_insertion_stats() @property const
-    {
-        return _collect_insertion_stats;
-    }
-
-    void collect_insertion_stats(bool collect) @property 
-    {
-        _collect_insertion_stats = collect;
-
-        if (collect && insertion_stats_accumulator is null)
-            insertion_stats_accumulator = new InsertionStatsAccumulator();
-    }
-
-    bool collect_deletion_stats() @property const
-    {
-        return _collect_deletion_stats;
-    }
-
-    void collect_deletion_stats(bool collect) @property 
-    {
-        _collect_deletion_stats = collect;
-
-        if (collect && deletion_stats_accumulator is null)
-            deletion_stats_accumulator = new DeletionStatsAccumulator();
-    }
-
     private bool collect_some_read_stats() @property const 
     {
         return collect_flow_stats      || collect_offset_stats ||
@@ -155,6 +87,31 @@ class PileupProcessor(Pileup)
     {
         if (collect_nothing)
             return;
+
+        if (collect_column_stats)
+        {
+            column_stats_printer = new ColumnStatsPrinter(column_stats_filename, id == 0);
+        }
+
+        if (collect_flow_stats)
+        {
+            flow_stats_accumulator = new FlowStatsAccumulator();
+        }
+
+        if (collect_offset_stats)
+        {
+            offset_stats_accumulator = new OffsetStatsAccumulator();
+        }
+
+        if (collect_insertion_stats)
+        {
+            insertion_stats_accumulator = new InsertionStatsAccumulator();
+        }
+
+        if (collect_deletion_stats)
+        {
+            deletion_stats_accumulator = new DeletionStatsAccumulator();
+        }
 
         foreach (column; _pileup)
         {
