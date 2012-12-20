@@ -1,5 +1,5 @@
-DMD=dmd
-D_FLAGS=-O -release -inline
+DMD=ldmd2
+D_FLAGS=-O3 -release -inline
 D_INCLUDES=-Ilib/BioD -Isrc
 
 all:
