@@ -31,6 +31,16 @@ followed by a header line. They can be easily loaded into R via standard
 Directory `src/python` contains Python scripts for visualizing these
 files by means of Matplotlib library. 
 
+## Examples of generated plots
+
+![Error frequency along the read](http://dl.dropbox.com/u/7916095/iontorrent-stats/plots/error_frequencies.png)
+
+![Call signal intensity distribution](http://dl.dropbox.com/u/7916095/iontorrent-stats/plots/intensities.png)
+
+![Undercall signal intensity distribution](http://dl.dropbox.com/u/7916095/iontorrent-stats/plots/undercalls.png)
+
+![Overcall signal intensity distribution](http://dl.dropbox.com/u/7916095/iontorrent-stats/plots/overcalls.png)
+
 ## License
 
 IonTorrent-Stats is distributed under GPLv2+ license.
