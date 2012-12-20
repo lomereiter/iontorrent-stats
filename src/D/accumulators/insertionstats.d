@@ -1,6 +1,7 @@
 module accumulators.insertionstats;
 
 import std.stdio;
+import std.algorithm;
 import std.range;
 
 class InsertionStatsAccumulator
@@ -18,6 +19,22 @@ class InsertionStatsAccumulator
     this(size_t max_intensity_value=1536)
     {
         _intensities = new uint[max_intensity_value];
+    }
+
+    static auto merge(InsertionStatsAccumulator acc1,
+                      InsertionStatsAccumulator acc2)
+    {
+        auto max_intensity_value = max(acc1._intensities.length,
+                                       acc2._intensities.length);
+
+        auto acc = new InsertionStatsAccumulator(max_intensity_value);
+        acc._n_insertions = acc1._n_insertions + acc2._n_insertions;
+        acc._n_resolved = acc1._n_resolved + acc2._n_resolved;
+        acc._n_overcalls = acc1._n_overcalls + acc2._n_overcalls;
+        acc._intensities[0 .. acc1._intensities.length] = acc1._intensities[];
+        acc._intensities[0 .. acc2._intensities.length] += acc2._intensities[];
+
+        return acc;
     }
 
     void updateStatistics(Insertion)(Insertion insertion)

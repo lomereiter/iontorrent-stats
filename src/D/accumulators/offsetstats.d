@@ -14,6 +14,19 @@ class OffsetStatsAccumulator {
         int[1024] _insertions_starting_at;
     }
 
+    static auto merge(OffsetStatsAccumulator acc1, OffsetStatsAccumulator acc2)
+    {
+        auto acc = new OffsetStatsAccumulator();
+
+        acc._total_reads[] = acc1._total_reads[] + acc2._total_reads[];
+        acc._mismatches_at[] = acc1._mismatches_at[] + acc2._mismatches_at[];
+        acc._deletions_before[] = acc1._deletions_before[] + acc2._deletions_before[];
+        acc._insertions_starting_at[] = acc1._insertions_starting_at[] + 
+                                        acc2._insertions_starting_at[];
+
+        return acc;
+    }
+
     void printReport(string filename)
     {
         auto _out = File(filename, "w+");

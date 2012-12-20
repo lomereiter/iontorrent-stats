@@ -1,6 +1,7 @@
 module accumulators.deletionstats;
 
 import std.stdio;
+import std.algorithm : max;
 
 class DeletionStatsAccumulator
 {
@@ -17,6 +18,22 @@ class DeletionStatsAccumulator
     this(size_t maximum_intensity_value=1536)
     {
         _intensities = new uint[maximum_intensity_value];
+    }
+
+    static auto merge(DeletionStatsAccumulator acc1,
+                      DeletionStatsAccumulator acc2)
+    {
+        auto max_intensity_value = max(acc1._intensities.length,
+                                       acc2._intensities.length);
+
+        auto acc = new DeletionStatsAccumulator(max_intensity_value);
+        acc._n_deletions = acc1._n_deletions + acc2._n_deletions;
+        acc._n_resolved = acc1._n_resolved + acc2._n_resolved;
+        acc._n_undercalls = acc1._n_undercalls + acc2._n_undercalls;
+        acc._intensities[0 .. acc1._intensities.length] = acc1._intensities[];
+        acc._intensities[0 .. acc2._intensities.length] += acc2._intensities[];
+
+        return acc;
     }
 
     void updateStatistics(Deletion)(Deletion deletion)

@@ -3,6 +3,7 @@ module accumulators.flowstats;
 import bio.core.base;
 
 import std.stdio;
+import std.algorithm : max;
 
 class FlowStatsAccumulator
 {
@@ -10,14 +11,44 @@ class FlowStatsAccumulator
     {
         // nucleotide -> called length -> intensity value -> count
         uint[][][4] _distributions;
+
+        uint _max_len;
+        uint _max_int;
     }
 
     this(uint max_length=16, uint max_intensity_value=1536)
     {
+        _max_len = max_length;
+        _max_int = max_intensity_value;
+
         foreach (nuc; 0 .. 4)
         {
             _distributions[nuc] = new uint[][](max_length, max_intensity_value);
         }
+    }
+
+    static auto merge(FlowStatsAccumulator acc1, FlowStatsAccumulator acc2)
+    {
+        auto max_length = max(acc1._max_len, acc2._max_len);
+        auto max_intensity_value = max(acc1._max_int, acc2._max_int);
+        auto acc = new FlowStatsAccumulator(max_length, max_intensity_value);
+
+        foreach (i; 0 .. 4)
+            foreach (len; 0 .. max_length)
+                foreach (intensity; 0 .. max_intensity_value)
+                {
+                    uint result = 0;
+
+                    if (len < acc1._max_len && intensity < acc1._max_int)
+                       result += acc1._distributions[i][len][intensity];
+
+                    if (len < acc2._max_len && intensity < acc2._max_int)
+                       result += acc2._distributions[i][len][intensity];
+
+                    acc._distributions[i][len][intensity] = result;
+                }
+
+        return acc;
     }
 
     void updateStatistics(BaseInfo)(BaseInfo[] bases)

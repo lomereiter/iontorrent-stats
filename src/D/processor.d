@@ -20,7 +20,6 @@ class PileupProcessor(Pileup)
     private 
     {
         Pileup _pileup;
-        ColumnStatsPrinter _column_stats_printer;
 
         bool _collect_column_stats;
         bool _collect_deletion_stats;
@@ -31,6 +30,7 @@ class PileupProcessor(Pileup)
 
     public 
     {
+        ColumnStatsPrinter column_stats_printer;
         OffsetStatsAccumulator offset_stats_accumulator;
         FlowStatsAccumulator flow_stats_accumulator;
         InsertionStatsAccumulator insertion_stats_accumulator;
@@ -38,11 +38,33 @@ class PileupProcessor(Pileup)
 
         string flow_order;
         string key_sequence;
+        string column_stats_filename = "columns.dat";
+
+        ulong id;
     }
 
     this(Pileup pileup)
     {
         _pileup = pileup;
+    }
+
+    void mergeResultsWith(PileupProcessor other)
+    {
+        offset_stats_accumulator = OffsetStatsAccumulator.merge(
+                                       offset_stats_accumulator,
+                                       other.offset_stats_accumulator);
+
+        flow_stats_accumulator = FlowStatsAccumulator.merge(
+                                     flow_stats_accumulator,
+                                     other.flow_stats_accumulator);
+
+        insertion_stats_accumulator = InsertionStatsAccumulator.merge(
+                                          insertion_stats_accumulator,
+                                          other.insertion_stats_accumulator);
+
+        deletion_stats_accumulator = DeletionStatsAccumulator.merge(
+                                         deletion_stats_accumulator,
+                                         other.deletion_stats_accumulator);
     }
 
     PileupProcessor settings() @property 
@@ -55,12 +77,15 @@ class PileupProcessor(Pileup)
         return _collect_column_stats;
     }
 
+    /// Only processor with id 0 prints comments and header
     void collect_column_stats(bool collect) @property 
     {
         _collect_column_stats = collect;
 
-        if (collect && _column_stats_printer is null)
-            _column_stats_printer = new ColumnStatsPrinter("columns.dat");
+        if (collect && column_stats_printer is null)
+        {
+            column_stats_printer = new ColumnStatsPrinter(column_stats_filename, id == 0);
+        }
     }
 
     bool collect_offset_stats() @property const
@@ -135,7 +160,7 @@ class PileupProcessor(Pileup)
         {
             if (collect_column_stats)
             {
-                _column_stats_printer.printColumn(column);
+                column_stats_printer.printColumn(column);
             }
 
             if (!collect_some_read_stats)

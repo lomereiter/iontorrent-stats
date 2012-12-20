@@ -38,7 +38,6 @@ IonTorrent-Stats is distributed under GPLv2+ license.
 ## TODO
 
 * Collect mismatch statistics
-* Parallelize execution
 * Add more plot generation scripts
 * Add Python script for generating HTML pages (via Django templates)
 * Add `launch.sh` script for integration with Torrent Browser Plugin Store

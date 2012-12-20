@@ -10,11 +10,15 @@ class ColumnStatsPrinter
         File _out;
     }
 
-    this(string filename) 
+    this(string filename, bool print_header=true) 
     {
         _out = File(filename, "w+");
-        writeComments();
-        writeHeader();
+
+        if (print_header)
+        {
+            writeComments();
+            writeHeader();
+        }
     }
 
     private void writeComments()
@@ -72,5 +76,10 @@ class ColumnStatsPrinter
                      n_mismatches_at, '\t',
                      n_deletions_starting_at, '\t',
                      n_insertions_before);
+    }
+
+    void closeFileHandle()
+    {
+        _out.close();
     }
 }
