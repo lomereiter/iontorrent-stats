@@ -178,7 +178,7 @@ int main(string[] args) {
         else // serial version
         {
             auto pileup = makePileup(bam.reads, true);
-            auto processor = createPileupProcessor(pileup, 0, "columns.dat");
+            auto processor = createPileupProcessor(pileup, 0, buildPath(dir, "columns.dat"));
             processor.run();
         }
 
