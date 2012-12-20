@@ -5,14 +5,5 @@ import matplotlib.pyplot as plt
 
 from matplotlib.mlab import csv2rec, rec_groupby
 
-def make_console_app(fn):
-    def print_usage():
-        print("Usage: %s <input.dat> <output.png>" % sys.argv[0])
-
-    if len(sys.argv) < 3:
-        print_usage()
-        sys.exit(0)
-
-    input = sys.argv[1]
-    output = sys.argv[2]
-    fn(input, output)
+def read_table(filename, converter_dict=None, **kwargs):
+    return csv2rec(filename, delimiter='\t', converterd=converter_dict, **kwargs)

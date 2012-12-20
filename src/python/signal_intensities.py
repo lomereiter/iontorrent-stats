@@ -1,9 +1,7 @@
-#!/usr/bin/env python
 from common import *
 
-@make_console_app
 def plot(in_fn, out_fn):
-    data = rec_groupby(csv2rec(in_fn, delimiter='\t'),
+    data = rec_groupby(read_table(in_fn),
                        ('intensity', ),
                        [('count', sum, 'count')])
 

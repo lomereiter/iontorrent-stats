@@ -1,11 +1,7 @@
-#!/usr/bin/env python
 from common import *
 
-@make_console_app
 def plot(in_fn, out_fn):
-    data = csv2rec(in_fn, 
-                   delimiter='\t',
-                   converterd=dict(zip(range(6), [np.float] * 6)))
+    data = read_table(in_fn, dict(zip(range(6), [np.float] * 6)))
 
     m_freq = data['mismatches'] / data['total']
     i_freq = data['insertions'] / data['total']
