@@ -54,7 +54,8 @@ class OffsetStatsAccumulator {
 
     void updateStatistics(BaseInfo)(BaseInfo[] bases)
     {
-        _total_reads[0 .. bases.length - 1] += 1;
+        for (size_t i = 0; i < bases.length - 1; i++)
+            _total_reads[i] += 1;
 
         foreach (size_t offset, baseinfo; bases)
         {
@@ -77,5 +78,4 @@ class OffsetStatsAccumulator {
             }
         }
     }
-
 }

@@ -55,14 +55,26 @@ class FlowStatsAccumulator
     {
         foreach (size_t offset, baseinfo; bases)
         {
-            if (offset == 0 || bases[offset - 1].flow_call != baseinfo.flow_call)
-            {
-                auto flow_call = baseinfo.flow_call;
-                auto flow_call_base = cast(Base5)flow_call.base;
-                auto len = flow_call.length;
-                auto intensity = flow_call.intensity_value;
-                _distributions[flow_call_base.internal_code][len][intensity] += 1;
-            }
+            if (offset == 0)
+                goto process;
+
+            auto prev_int = bases[offset - 1].flow_call.intensity_value;
+
+            if (prev_int != baseinfo.flow_call.intensity_value)
+                goto process;
+
+            auto prev_base = bases[offset - 1].flow_call.base;
+
+            if (prev_base != baseinfo.flow_call.base)
+                goto process;
+
+            continue;
+process:
+            auto flow_call = baseinfo.flow_call;
+            auto flow_call_base = cast(Base5)flow_call.base;
+            auto len = flow_call.length;
+            auto intensity = flow_call.intensity_value;
+            _distributions[flow_call_base.internal_code][len][intensity] += 1;
         }
     }
 

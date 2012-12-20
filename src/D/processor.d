@@ -133,8 +133,11 @@ class PileupProcessor(Pileup)
 
                 typeof(bases.front)[1024] baseinfo_buf = void;
                 size_t i;
-                foreach (info; bases)
-                    baseinfo_buf[i++] = info;
+                while (!bases.empty)
+                {
+                    bases.constructFront(&baseinfo_buf[i++]);
+                    bases.popFront();
+                }
 
                 auto baseinfo = baseinfo_buf[0 .. i];
 
