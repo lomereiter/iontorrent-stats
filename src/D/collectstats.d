@@ -4,8 +4,10 @@ import bio.bam.pileup;
 import std.stdio;
 import std.getopt;
 import std.range;
+import std.exception;
 import std.file;
 import std.path;
+import std.process;
 
 version(parallel)
 {
@@ -46,8 +48,7 @@ auto createPileupProcessor(Pileup)(Pileup pileup, ulong id, string column_stats_
 void printUsage(string prg_name) {
     stderr.writeln("usage: ", prg_name, " [OPTIONS] <input.bam>");
     stderr.writeln();
-    stderr.writeln("       BAM file must provide FZ, ZF, and MD tags");
-    stderr.writeln();
+    stderr.writeln("       BAM file must provide FZ, ZF, and MD tags.");
     
     stderr.writeln("OPTIONS:    -d, --output-dir=DIR");
     stderr.writeln("                 Directory to which results will be output (created if doesn't exist).");
@@ -61,44 +62,38 @@ void printUsage(string prg_name) {
     stderr.writeln("                 Don't collect read offset statistics");
     stderr.writeln("            -C, --no-column-stats");
     stderr.writeln("                 Don't print column statistics");
+    stderr.writeln("            -e, --use-environment-vars");
+    stderr.writeln("                 Use TSP_LIBRARY_KEY, TSP_FLOWORDER, and TSP_NUM_FLOWS variables");
+    stderr.writeln("                 instead of reading these parameters from the first read group");
+    stderr.writeln("                 encountered in the BAM header");
 }
 
 int main(string[] args) {
 
     try
     {
-        version (parallel)
-        {
-            int chunk_size = 32_000_000; 
+        bool use_environment_vars = false;
 
-            getopt(args,
-                   std.getopt.config.caseSensitive,
-                   "output-dir|d", &dir,
-                   "no-insertion-stats|I", &no_insertion_stats,
-                   "no-deletion-stats|D",  &no_deletion_stats,
-                   "no-flow-stats|F",      &no_flow_stats,
-                   "no-offset-stats|O",    &no_offset_stats,
-                   "no-column-stats|C",    &no_column_stats,
-                   "chunk-size|s",         &chunk_size); // for testing only
-        }
-        else
-        {
-            getopt(args,
-                   std.getopt.config.caseSensitive,
-                   "output-dir|d", &dir,
-                   "no-insertion-stats|I", &no_insertion_stats,
-                   "no-deletion-stats|D",  &no_deletion_stats,
-                   "no-flow-stats|F",      &no_flow_stats,
-                   "no-offset-stats|O",    &no_offset_stats,
-                   "no-column-stats|C",    &no_column_stats);
-        }
+                                     // for tweaking parallel build.
+        int chunk_size = 32_000_000; // doesn't make any difference for serial version.
+                                     // isn't meant to be changed by end users.
+        getopt(args,
+               std.getopt.config.caseSensitive,
+               "output-dir|d",           &dir,
+               "no-insertion-stats|I",   &no_insertion_stats,
+               "no-deletion-stats|D",    &no_deletion_stats,
+               "no-flow-stats|F",        &no_flow_stats,
+               "no-offset-stats|O",      &no_offset_stats,
+               "no-column-stats|C",      &no_column_stats,
+               "use-environment-vars|e", &use_environment_vars,
+               "chunk-size|s",           &chunk_size);
 
         if (args.length < 2) {
             printUsage(args[0]);
             return 0;
         }
 
-        auto filename = args[1];
+        auto filename = expandTilde(args[1]);
 
         version (parallel)
         {
@@ -115,9 +110,25 @@ int main(string[] args) {
         ////////////////////////////////////////////////////////////////////////////////////////////
         ///                         get flow order and key sequence                                 
         ////////////////////////////////////////////////////////////////////////////////////////////
-        auto rg = bam.header.read_groups.values.front;
-        flow_order = rg.flow_order;
-        key_sequence = rg.key_sequence;
+
+        if (!use_environment_vars)
+        {
+            auto rg = bam.header.read_groups.values.front;
+            flow_order = rg.flow_order;
+            key_sequence = rg.key_sequence;
+        }
+        else
+        {
+            auto tsp_flow_order = environment["TSP_FLOWORDER"];
+            auto tsp_key_sequence = environment["TSP_LIBRARY_KEY"];
+            auto n_flows = to!int(environment["TSP_NUM_FLOWS"]);
+
+            enforce(tsp_flow_order.length > 0, "TSP_FLOWORDER must be a non-empty string");
+            enforce(tsp_key_sequence.length > 0, "TSP_LIBRARY_KEY must be a non-empty string");
+
+            flow_order = to!string(tsp_flow_order.cycle().take(n_flows));
+            key_sequence = tsp_key_sequence;
+        }
 
         ////////////////////////////////////////////////////////////////////////////////////////////
         ///                             change working directory                                    
