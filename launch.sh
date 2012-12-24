@@ -9,5 +9,5 @@
 #export TSP_LIBRARY_KEY='TCAG'
 #export TSP_RUN_NAME='9IKNG'
 
-./build/iontorrent-stats -d $RESULTS_DIR/$TSP_RUN_NAME/reports $TSP_FILEPATH_BAM 
+./build/iontorrent-stats -e -d $RESULTS_DIR/$TSP_RUN_NAME/reports $TSP_FILEPATH_BAM 
 ./src/python/contentgen.py $RESULTS_DIR/$TSP_RUN_NAME/reports $RESULTS_DIR/$TSP_RUN_NAME/images
