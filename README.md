@@ -53,4 +53,3 @@ IonTorrent-Stats is distributed under GPLv2+ license.
 * Collect mismatch statistics
 * Add more plot generation scripts
 * Fancier HTML output (use tabs for plots?)
-* Switch to R for generating plots?
