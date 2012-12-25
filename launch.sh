@@ -14,6 +14,6 @@ VERSION="0.1"
 
 OUTFILE=${RESULTS_DIR}/${PLUGINNAME}_block.html
 
-./build/iontorrent-stats -e -d $RESULTS_DIR/reports $TSP_FILEPATH_BAM 
-./src/python/contentgen.py $RESULTS_DIR/reports $RESULTS_DIR/images
-./src/python/htmlgen.py $RESULTS_DIR/images $OUTFILE
+${DIRNAME}/build/iontorrent-stats -e -d $RESULTS_DIR/reports $TSP_FILEPATH_BAM 
+${DIRNAME}/src/python/contentgen.py $RESULTS_DIR/reports $RESULTS_DIR/images
+${DIRNAME}/src/python/htmlgen.py $OUTFILE

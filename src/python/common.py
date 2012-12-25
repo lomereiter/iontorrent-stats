@@ -1,6 +1,12 @@
 import sys
 
 import numpy as np
+
+import matplotlib
+
+# required in order to work without X-server running
+matplotlib.use('Agg')
+
 import matplotlib.pyplot as plt
 
 from matplotlib.mlab import csv2rec, rec_groupby

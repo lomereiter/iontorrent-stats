@@ -13,8 +13,7 @@ settings.configure(TEMPLATE_DIRS=(
                    TEMPLATE_DEBUG=True)
 
 class HtmlGenerator:
-    def __init__(self, content_dir, outfile):
-        self.content_dir = content_dir
+    def __init__(self, outfile):
         self.outfile = outfile
         self.dest_dir = os.path.dirname(outfile)
 
@@ -25,15 +24,15 @@ class HtmlGenerator:
         with open(self.outfile, 'w+') as f:
             f.write(render_to_string('iontorrent-stats_block.djt', { 
                                             'overcall_plot': 
-                                                os.path.join(self.content_dir, 'overcalls.png')
+                                                os.path.join('images', 'overcalls.png')
                                           , 'undercall_plot':
-                                                os.path.join(self.content_dir, 'undercalls.png')
+                                                os.path.join('images', 'undercalls.png')
                                           , 'intensity_plot':
-                                                os.path.join(self.content_dir, 'intensities.png')
+                                                os.path.join('images', 'intensities.png')
                                           , 'error_frequency_plot':
-                                                os.path.join(self.content_dir, 'error_frequencies.png')
+                                                os.path.join('images', 'error_frequencies.png')
                                                   }))
 
 if __name__ == '__main__':
-    gen = HtmlGenerator(sys.argv[1], sys.argv[2])
+    gen = HtmlGenerator(sys.argv[1])
     gen.run()
