@@ -7,6 +7,7 @@ recent versions of IonTorrent Suite.
 ## Installation
 
 [LDC](https://github.com/ldc-developers/ldc/downloads) compiler must be installed in order to build the application.
+Also Rdmd tool from [DMD compiler](https://dlang.org/download) is required, thus DMD must be installed as well.
 
 ```sh
 git clone --recursive https://github.com/lomereiter/iontorrent-stats
