@@ -1,0 +1,21 @@
+<html>
+    <body>
+
+    Insertion, deletion, and mismatch frequencies along the read
+    <img src="{{ error_frequency_plot }}" />
+    <br />
+
+    Undercall intensities
+    <img src="{{ undercall_plot }}" />
+    <br />
+
+    Overcall intensities
+    <img src="{{ overcall_plot }}" />
+    <br />
+
+    Flow call intensity distribution
+    <img src="{{ intensity_plot }}" />
+    <br />
+
+    </body>
+</html>
