@@ -146,6 +146,10 @@ class PileupProcessor(Pileup)
                     foreach (insertion; insertionEvents(baseinfo))
                     {
                         insertion_stats_accumulator.updateStatistics(insertion);
+                        if (collect_flow_stats)
+                        {
+                            flow_stats_accumulator.updateInsertionStats(insertion);
+                        }
                     }
                 }
 
@@ -157,6 +161,10 @@ class PileupProcessor(Pileup)
                     foreach (deletion; deletionEvents(baseinfo, flow_order, intensities))
                     {
                         deletion_stats_accumulator.updateStatistics(deletion);
+                        if (collect_flow_stats)
+                        {
+                            flow_stats_accumulator.updateDeletionStats(deletion);
+                        }
                     }
                 }
 

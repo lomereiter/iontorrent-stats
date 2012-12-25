@@ -3,14 +3,19 @@ module accumulators.flowstats;
 import bio.core.base;
 
 import std.stdio;
-import std.algorithm : max;
+import std.algorithm;
+import std.range;
 
 class FlowStatsAccumulator
 {
     private 
     {
-        // nucleotide -> called length -> intensity value -> count
-        uint[][][4] _distributions;
+        // nucleotide -> called length -> intensity value -> counts
+        // counts:
+        //          total
+        //          overcalls (approx.)
+        //          undercalls (approx.)
+        uint[3][][][4] _distributions;
 
         uint _max_len;
         uint _max_int;
@@ -23,7 +28,7 @@ class FlowStatsAccumulator
 
         foreach (nuc; 0 .. 4)
         {
-            _distributions[nuc] = new uint[][](max_length, max_intensity_value);
+            _distributions[nuc] = new uint[3][][](max_length, max_intensity_value);
         }
     }
 
@@ -37,15 +42,15 @@ class FlowStatsAccumulator
             foreach (len; 0 .. max_length)
                 foreach (intensity; 0 .. max_intensity_value)
                 {
-                    uint result = 0;
+                    uint[3] result;
 
                     if (len < acc1._max_len && intensity < acc1._max_int)
-                       result += acc1._distributions[i][len][intensity];
+                       result[] += acc1._distributions[i][len][intensity][];
 
                     if (len < acc2._max_len && intensity < acc2._max_int)
-                       result += acc2._distributions[i][len][intensity];
+                       result[] += acc2._distributions[i][len][intensity][];
 
-                    acc._distributions[i][len][intensity] = result;
+                    acc._distributions[i][len][intensity][] = result[];
                 }
 
         return acc;
@@ -74,7 +79,7 @@ process:
             auto flow_call_base = cast(Base5)flow_call.base;
             auto len = flow_call.length;
             auto intensity = flow_call.intensity_value;
-            _distributions[flow_call_base.internal_code][len][intensity] += 1;
+            _distributions[flow_call_base.internal_code][len][intensity][0] += 1;
         }
     }
 
@@ -86,18 +91,45 @@ process:
         _out.writeln("# length: called length");
         _out.writeln("# intensity: intensity value");
         _out.writeln("# count: number of flow calls with these base, length, and intensity");
+        _out.writeln("# ins: approximate number of overcalls");
+        _out.writeln("# del: approximate number of undercalls");
 
-        _out.writeln("base\tlength\tintensity\tcount");
+        _out.writeln("base\tlength\tintensity\tcount\tins\tdel");
 
         foreach (size_t base, intensity_distributions; _distributions)
             foreach (size_t length, distribution; intensity_distributions)
-                foreach (size_t intensity_value, count; distribution)
-                    if (count != 0) 
+                foreach (size_t intensity_value, counts; distribution)
+                    if (counts[0] != 0 || counts[1] != 0 || counts[2] != 0) 
                     {
                         _out.writeln(Base5.fromInternalCode(cast(ubyte)base), '\t', 
                                      length, '\t', 
                                      intensity_value, '\t', 
-                                     count);
+                                     counts[0], '\t',
+                                     counts[1], '\t',
+                                     counts[2]);
                     }
+    }
+
+    void updateInsertionStats(I)(I insertion)
+    {
+        foreach (flow_call; insertion.flowcalls)
+        {
+            auto flow_call_base = cast(Base5)flow_call.base;
+            auto len = flow_call.length;
+            auto intensity = flow_call.intensity_value;
+            _distributions[flow_call_base.internal_code][len][intensity][1] += 1;
+        }
+    }
+
+    void updateDeletionStats(D)(D deletion)
+    {
+        auto intensities = deletion.deleted_base_intensities.data;
+        foreach (base_and_intensity; zip(uniq(deletion.bases), uniq(intensities)))
+        {
+            auto base5 = Base5(base_and_intensity[0]);
+            auto intensity = base_and_intensity[1];
+            auto len = (intensity + 50) / 100; // FIXME
+            _distributions[base5.internal_code][len][intensity][2] += 1;
+        }
     }
 }
