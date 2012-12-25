@@ -9,6 +9,8 @@ import std.file;
 import std.path;
 import std.process;
 
+import ldc_gc_workaround;
+
 version(parallel)
 {
     import std.parallelism;
