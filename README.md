@@ -33,13 +33,13 @@ files by means of Matplotlib library.
 
 ## Examples of generated plots
 
-![Error frequency along the read](http://dl.dropbox.com/u/7916095/iontorrent-stats/plots/error_frequencies.png)
+![Error frequency along the read](https://github.com/lomereiter/iontorrent-stats/raw/gh-pages/example_plots/error_frequencies.png)
 
-![Call signal intensity distribution](http://dl.dropbox.com/u/7916095/iontorrent-stats/plots/intensities.png)
+![Call signal intensity distribution](https://github.com/lomereiter/iontorrent-stats/raw/gh-pages/example_plots/intensities.png)
 
-![Undercall signal intensity distribution](http://dl.dropbox.com/u/7916095/iontorrent-stats/plots/undercalls.png)
+![Undercall signal intensity distribution](https://github.com/lomereiter/iontorrent-stats/raw/gh-pages/example_plots/undercalls.png)
 
-![Overcall signal intensity distribution](http://dl.dropbox.com/u/7916095/iontorrent-stats/plots/overcalls.png)
+![Overcall signal intensity distribution](https://github.com/lomereiter/iontorrent-stats/raw/gh-pages/example_plots/overcalls.png)
 
 ## License
 
