@@ -4,6 +4,8 @@ IonTorrent-Stats
 Tool for collecting various statistics about BAM files produced by
 recent versions of IonTorrent Suite.
 
+Uploaded on Torrent Browser Plugin Store as [IonStatPlots plugin](http://ioncommunity.lifetechnologies.com/docs/DOC-7022).
+
 ## Installation
 
 [LDC](https://github.com/ldc-developers/ldc/downloads) compiler must be installed in order to build the application.
