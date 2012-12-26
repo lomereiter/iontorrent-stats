@@ -19,4 +19,5 @@ ${DIRNAME}/src/python/contentgen.py $RESULTS_DIR/reports $RESULTS_DIR/images
 ${DIRNAME}/src/python/htmlgen.py $OUTFILE
 
 # copy JS/CSS
-cp -R js/ $RESULTS_DIR
+cp -R ${DIRNAME}/js/ $RESULTS_DIR
+cp -R ${DIRNAME}/css/ $RESULTS_DIR
