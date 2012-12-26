@@ -36,7 +36,9 @@ files by means of Matplotlib library.
 
 ## Examples of generated plots
 
-![Error frequency along the read](https://github.com/lomereiter/iontorrent-stats/raw/gh-pages/example_plots/error_frequencies.png)
+![Error frequency along the read](https://github.com/lomereiter/iontorrent-stats/raw/gh-pages/example_plots/err_freq_vs_oft.png)
+
+![Error frequency vs intensity](https://github.com/lomereiter/iontorrent-stats/raw/gh-pages/example_plots/err_freq_vs_int.png)
 
 ![Call signal intensity distribution](https://github.com/lomereiter/iontorrent-stats/raw/gh-pages/example_plots/intensities.png)
 
