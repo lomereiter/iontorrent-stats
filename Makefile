@@ -1,5 +1,5 @@
 DMD=ldmd2
-D_FLAGS=-O3 -release -inline
+D_FLAGS=-O3 -release -inline -version=parallel
 D_INCLUDES=-Ilib/BioD -Isrc
 
 all:
