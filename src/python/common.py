@@ -15,9 +15,11 @@ def read_table(filename, converter_dict=None, **kwargs):
     return csv2rec(filename, delimiter='\t', converterd=converter_dict, **kwargs)
 
 def plot_intensity_distribution(data, out_fn, xlabel="Intensity"):
-    approx_density = (data['count'] / 0.01) / np.sum(data['count'])
 
-    intensities = data['intensity'] / 100.0
+    max_intensity = data['intensity'][-1]
+    approx_density = np.zeros(max_intensity + 1)
+    approx_density[data['intensity']] = (data['count'] / 0.01) / np.sum(data['count'])
+    intensities = np.arange(max_intensity + 1) / 100.0
 
     plt.plot(intensities, approx_density, 'b-')
     plt.fill_between(intensities, approx_density, color="grey", alpha=0.8)

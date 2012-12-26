@@ -6,11 +6,10 @@ HTML page generation happens in two stages.
     ./contentgen.py <report dir> <destination dir>
    ```
 
-2. (TBD) Then, directory with HTML and images is generated
+2. Then, HTML file is generated
 
    ```python
-     ./htmlgen.py <content dir> <output dir>
+     ./htmlgen.py <output filename>
    ```
 
-   (here `<content dir>` is `<destination dir>` of the
-   previous command)
+   (ATM, can be generated independently. That might not hold true in the future.)
