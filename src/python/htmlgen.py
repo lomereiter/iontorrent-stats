@@ -17,7 +17,7 @@ class HtmlGenerator:
         self.outfile = outfile
         self.dest_dir = os.path.dirname(outfile)
 
-        if not os.path.exists(self.dest_dir):
+        if self.dest_dir != '' and not os.path.exists(self.dest_dir):
             os.makedirs(self.dest_dir)
 
     def run(self):
@@ -29,8 +29,10 @@ class HtmlGenerator:
                                                 os.path.join('images', 'undercalls.png')
                                           , 'intensity_plot':
                                                 os.path.join('images', 'intensities.png')
-                                          , 'error_frequency_plot':
-                                                os.path.join('images', 'error_frequencies.png')
+                                          , 'error_frequency_vs_offset_plot':
+                                                os.path.join('images', 'err_freq_vs_oft.png')
+                                          , 'error_frequency_vs_intensity_plot':
+                                                os.path.join('images', 'err_freq_vs_int.png')
                                                   }))
 
 if __name__ == '__main__':

@@ -5,6 +5,7 @@ import os
 from common import plt
 
 import error_freq_vs_offset
+import error_freq_vs_intensity
 import signal_intensities
 import indel_intensities
 
@@ -23,7 +24,9 @@ class ContentGenerator:
                     *args, **kwargs)
 
     def run(self):
-        self._make_plot(error_freq_vs_offset, "offsets.dat", "error_frequencies.png")
+        self._make_plot(error_freq_vs_offset, "offsets.dat", "err_freq_vs_oft.png")
+
+        self._make_plot(error_freq_vs_intensity, "flows.dat", "err_freq_vs_int.png")
 
         self._make_plot(signal_intensities, "flows.dat", "intensities.png")
 
