@@ -3,6 +3,8 @@ from common import *
 def plot(in_fn, out_fn):
     data = read_table(in_fn, dict(zip(range(6), [np.float] * 6)))
 
+    data = data[data['total'] > 0.05 * data['total'][0]]
+
     m_freq = data['mismatches'] / data['total']
     i_freq = data['insertions'] / data['total']
     d_freq = data['deletions'] / data['total']

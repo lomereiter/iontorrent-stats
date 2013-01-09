@@ -1,7 +1,11 @@
 module accumulators.insertionstats;
 
+import constants;
+
 import std.stdio;
 import std.algorithm;
+import std.exception : enforce;
+import std.conv : to;
 import std.range;
 
 class InsertionStatsAccumulator
@@ -16,7 +20,7 @@ class InsertionStatsAccumulator
         uint[] _intensities; // overcall intensities
     }
 
-    this(size_t max_intensity_value=1536)
+    this(size_t max_intensity_value=MAX_INTENSITY_VALUE)
     {
         _intensities = new uint[max_intensity_value];
     }
@@ -37,6 +41,14 @@ class InsertionStatsAccumulator
         return acc;
     }
 
+    private void inc(int index) {
+        if (index < 0) index = 0;
+        enforce(index < _intensities.length,
+                "Unexpectedly large intensity value (" ~
+                to!string(index) ~ ")");
+        _intensities[index] += 1;
+    }
+
     void updateStatistics(Insertion)(Insertion insertion)
     {
         ++_n_insertions;
@@ -50,7 +62,7 @@ class InsertionStatsAccumulator
             if (number_of_flowcalls == 1)
             {
                 _n_resolved += 1;
-                _intensities[first_flow_call.intensity_value] += 1;
+                inc(first_flow_call.intensity_value);
             }
             else if (number_of_flowcalls == 2)
             {
@@ -59,8 +71,8 @@ class InsertionStatsAccumulator
                 {
                     _n_resolved += 1;
 
-                    _intensities[first_flow_call.intensity_value] += 1;
-                    _intensities[last_flow_call.intensity_value] += 1;
+                    inc(first_flow_call.intensity_value);
+                    inc(last_flow_call.intensity_value);
                 }
             }
             else if (number_of_flowcalls == 3)
@@ -70,9 +82,9 @@ class InsertionStatsAccumulator
                 {
                     _n_resolved += 1;
 
-                    _intensities[first_flow_call.intensity_value] += 1;
-                    _intensities[last_flow_call.intensity_value] += 1;
-                    _intensities[flowcalls.drop(1).front.intensity_value] += 1;
+                    inc(first_flow_call.intensity_value);
+                    inc(last_flow_call.intensity_value);
+                    inc(flowcalls.drop(1).front.intensity_value);
                 }
             }
             // There are also cases like 2.61, .56, .52, which are not counted here.

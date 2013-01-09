@@ -1,6 +1,10 @@
 module accumulators.deletionstats;
 
+import constants;
+
 import std.stdio;
+import std.exception;
+import std.conv : to;
 import std.algorithm : max;
 
 class DeletionStatsAccumulator
@@ -15,7 +19,7 @@ class DeletionStatsAccumulator
         uint[] _intensities; // undercall intensities
     }
 
-    this(size_t maximum_intensity_value=1536)
+    this(size_t maximum_intensity_value=MAX_INTENSITY_VALUE)
     {
         _intensities = new uint[maximum_intensity_value];
     }
@@ -49,7 +53,14 @@ class DeletionStatsAccumulator
             ++_n_resolved;
 
             foreach (intensity; deleted_base_intensities)
+            {
+                if (intensity < 0) intensity = 0; // FIXME
+
+                enforce(intensity < _intensities.length,
+                        "Unexpectedly large intensity value (" ~ to!string(intensity) ~ ")");
+
                 _intensities[intensity] += 1;
+            }
         }
     }
 

@@ -20,6 +20,7 @@ import processor;
 
 __gshared bool no_insertion_stats = false;
 __gshared bool no_deletion_stats = false;
+__gshared bool no_mismatch_stats = false;
 __gshared bool no_flow_stats = false;
 __gshared bool no_offset_stats = false;
 __gshared bool no_column_stats = false;
@@ -41,6 +42,7 @@ auto createPileupProcessor(Pileup)(Pileup pileup, ulong id, string column_stats_
     processor.settings.collect_column_stats    = !no_column_stats;
     processor.settings.collect_deletion_stats  = !no_deletion_stats;
     processor.settings.collect_insertion_stats = !no_insertion_stats;
+    processor.settings.collect_mismatch_stats  = !no_mismatch_stats;
     processor.settings.collect_flow_stats      = !no_flow_stats;
     processor.settings.collect_offset_stats    = !no_offset_stats;
 
@@ -58,6 +60,8 @@ void printUsage(string prg_name) {
     stderr.writeln("                 Don't collect insertion statistics");
     stderr.writeln("            -D, --no-deletion-stats");
     stderr.writeln("                 Don't collect deletion statistics");
+    stderr.writeln("            -M, --no-mismatch-stats");
+    stderr.writeln("                 Don't collect mismatch statistics");
     stderr.writeln("            -F, --no-flow-stats");
     stderr.writeln("                 Don't collect flow signal intensity statistics");
     stderr.writeln("            -O, --no-offset-stats");
@@ -84,6 +88,7 @@ int main(string[] args) {
                "output-dir|d",           &dir,
                "no-insertion-stats|I",   &no_insertion_stats,
                "no-deletion-stats|D",    &no_deletion_stats,
+               "no-mismatch-stats|M",    &no_mismatch_stats,
                "no-flow-stats|F",        &no_flow_stats,
                "no-offset-stats|O",      &no_offset_stats,
                "no-column-stats|C",      &no_column_stats,
@@ -190,7 +195,7 @@ int main(string[] args) {
         }
         else // serial version
         {
-            auto pileup = makePileup(bam.reads, true);
+            auto pileup = pileupColumns(bam.reads, true);
             auto processor = createPileupProcessor(pileup, 0, buildPath(dir, "columns.dat"));
             processor.run();
         }
@@ -220,6 +225,12 @@ int main(string[] args) {
             processor.deletion_stats_accumulator.printSummary("/dev/stdout");
             auto fn = buildPath(dir, "undercall.intensities.dat");
             processor.deletion_stats_accumulator.printUndercallsReport(fn);
+        }
+
+        if (!no_mismatch_stats)
+        {
+            auto fn = buildPath(dir, "mismatch.intensities.dat");
+            processor.mismatch_stats_accumulator.printMismatchesReport(fn);
         }
     }
     catch (Exception e)

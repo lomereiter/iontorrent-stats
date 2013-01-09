@@ -1,6 +1,6 @@
 module events.deletion;
 
-import bio.bam.fz.flowcall;
+import bio.bam.iontorrent.flowcall;
 import bio.core.sequence;
 
 import std.typecons;
@@ -66,24 +66,24 @@ struct Deletion(BaseInfo)
     NucleotideSequence bases; // deleted bases
 
 
-    private SmallArray!(ushort, 8) _deleted_base_intensities;
+    private SmallArray!(short, 8) _deleted_base_intensities;
 
-    SmallArray!(ushort, 8) deleted_base_intensities()
+    SmallArray!(short, 8) deleted_base_intensities()
     {
         return _deleted_base_intensities;
     }
 }
 
-auto deletionEvents(BaseInfo)(BaseInfo[] bases, string flow_order, in ushort[] intensities)
+auto deletionEvents(BaseInfo)(BaseInfo[] bases, string flow_order, in short[] intensities)
 {
     static struct Result
     {
         private BaseInfo[] _bases;
         private bool _reversed;
         private string _fo;
-        private const(ushort[]) _ints;
+        private const(short[]) _ints;
 
-        this(BaseInfo[] bases, string flow_order, in ushort[] intensities)
+        this(BaseInfo[] bases, string flow_order, in short[] intensities)
         {
             _reversed = false;
             _bases = bases;
@@ -144,8 +144,8 @@ auto deletionEvents(BaseInfo)(BaseInfo[] bases, string flow_order, in ushort[] i
                         continue;
                     }
 
-                    result._deleted_base_intensities = SmallArray!(ushort, 8)(n);
-                    ushort[] deleted_base_intensities = result._deleted_base_intensities.data;
+                    result._deleted_base_intensities = SmallArray!(short, 8)(n);
+                    short[] deleted_base_intensities = result._deleted_base_intensities.data;
 
                     auto current_base = unique_bases.front;
                     size_t j = 0; // number of consumed homopolymers

@@ -1,6 +1,6 @@
 module events.insertion;
 
-import bio.bam.fz.flowcall;
+import bio.bam.iontorrent.flowcall;
 
 import std.typecons;
 import std.algorithm;
