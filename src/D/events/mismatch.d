@@ -7,23 +7,43 @@ import std.typecons;
 
 struct Mismatch(BaseInfo)
 {
-    Nullable!ReadFlowCall previous_flow_call;
-    Nullable!ReadFlowCall next_flow_call;
+    Nullable!BaseInfo previous_base_info;
+    Nullable!BaseInfo next_base_info;
 
     size_t reference_position; // 0-based
     size_t offset; // offset on the query, 0-based
 
     Base reference_base;
-    BaseInfo base;
+    BaseInfo base_info;
 
     bool shares_flowcall_with_left_neighbour() @property const
     {
-        return !previous_flow_call.isNull && previous_flow_call == base.flow_call;
+        return !previous_base_info.isNull && 
+               previous_base_info.flow_call == base_info.flow_call;
     }
 
     bool shares_flowcall_with_right_neighbour() @property const
     {
-        return !next_flow_call.isNull && next_flow_call == base.flow_call;
+        return !next_base_info.isNull && 
+               next_base_info.flow_call == base_info.flow_call;
+    }
+
+    bool starts_swap() @property const
+    {
+        if (next_base_info.isNull)
+            return false;
+
+        return next_base_info.base == reference_base &&
+               next_base_info.reference_base == base_info.base;       
+    }
+
+    bool ends_swap() @property const
+    {
+        if (previous_base_info.isNull)
+            return false;
+
+        return previous_base_info.base == reference_base &&
+               previous_base_info.reference_base == base_info.base;
     }
 }
 
@@ -46,16 +66,16 @@ auto mismatchEvents(BaseInfo)(BaseInfo[] bases)
             {
                 if (base.cigar_operation.type == 'M' && base != base.reference_base)
                 {
-                    result.previous_flow_call.nullify();
-                    result.next_flow_call.nullify();
+                    result.previous_base_info.nullify();
+                    result.next_base_info.nullify();
 
                     if (offset > 0)
-                        result.previous_flow_call = _bases[offset - 1].flow_call;
+                        result.previous_base_info = _bases[offset - 1];
 
                     if (offset + 1 < _bases.length)
-                        result.next_flow_call = _bases[offset + 1].flow_call;
+                        result.next_base_info = _bases[offset + 1];
 
-                    result.base = base;
+                    result.base_info = base;
 
                     result.reference_position = base.position;
                     result.offset = offset;

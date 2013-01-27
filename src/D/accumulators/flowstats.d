@@ -141,11 +141,11 @@ process:
 
     void updateMismatchStats(M)(M mismatch)
     {
-        with (mismatch)
+        with (mismatch.base_info)
         {
-            auto intensity = base.flow_call.intensity_value;
-            auto len = base.flow_call.length;
-            auto base5 = cast(Base5)base.base;
+            auto intensity = flow_call.intensity_value;
+            auto len = flow_call.length;
+            auto base5 = cast(Base5)base;
             auto code = base5.internal_code;
             increment(code, len, intensity, 3);
         }
