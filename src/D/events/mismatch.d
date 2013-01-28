@@ -5,6 +5,15 @@ import bio.core.base;
 
 import std.typecons;
 
+/// types of mismatch:
+///     swap:
+///        XXXXXXXY -> XXXXXXYX
+///     
+///     under/over:
+///        XXXXYYYY -> XXXYYYYY
+///     
+///     over/under:
+///        XXXXYYYY -> XXXXXYYY
 struct Mismatch(BaseInfo)
 {
     Nullable!BaseInfo previous_base_info;
@@ -13,8 +22,12 @@ struct Mismatch(BaseInfo)
     size_t reference_position; // 0-based
     size_t offset; // offset on the query, 0-based
 
-    Base reference_base;
     BaseInfo base_info;
+
+    char reference_base() @property const
+    {
+        return base_info.reference_base;
+    }
 
     bool shares_flowcall_with_left_neighbour() @property const
     {
@@ -30,20 +43,46 @@ struct Mismatch(BaseInfo)
 
     bool starts_swap() @property const
     {
-        if (next_base_info.isNull)
+        if (previous_base_info.isNull || next_base_info.isNull)
             return false;
+
+        // ref:  XXXXXXXY
+        // read: XXXXXXYX
+        //             ^
 
         return next_base_info.base == reference_base &&
-               next_base_info.reference_base == base_info.base;       
+               next_base_info.reference_base == base_info.base &&
+               previous_base_info.base == reference_base;
     }
 
-    bool ends_swap() @property const
+    bool is_under_over() @property const
     {
-        if (previous_base_info.isNull)
+        // ref:  XXXXYYYY
+        // read: XXXYYYYY
+        //          ^
+
+        if (previous_base_info.isNull || next_base_info.isNull)
             return false;
 
-        return previous_base_info.base == reference_base &&
-               previous_base_info.reference_base == base_info.base;
+        return next_base_info.base == base_info.base &&
+               next_base_info.reference_base == next_base_info.base &&
+               reference_base == previous_base_info.reference_base &&
+               reference_base == previous_base_info.base;
+    }
+
+    bool is_over_under() @property const
+    {
+        // ref:  XXXXYYYY
+        // read: XXXXXYYY
+        //           ^
+
+        if (previous_base_info.isNull || next_base_info.isNull)
+            return false;
+
+        return previous_base_info.base == base_info.base &&
+               previous_base_info.reference_base == previous_base_info.base &&
+               reference_base == next_base_info.reference_base &&
+               reference_base == next_base_info.base;
     }
 }
 

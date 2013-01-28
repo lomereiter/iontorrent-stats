@@ -68,6 +68,7 @@ class DeletionStatsAccumulator
     {
         auto _file = File(filename, "w+");
 
+        _file.writeln("######## DELETIONS #######");
         _file.writeln("# Number of deletions: ", _n_deletions);
         _file.writeln("# Likely to be caused solely by undercalls: ", _n_resolved,
                       " (", cast(double)_n_resolved * 100.0 / _n_deletions, "%)");

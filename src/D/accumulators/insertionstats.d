@@ -97,6 +97,7 @@ class InsertionStatsAccumulator
     {
         auto _file = File(filename, "w+");
 
+        _file.writeln("####### INSERTIONS #######");
         _file.writeln("# Number of insertions: ", _n_insertions);
         _file.writeln("# Likely to be caused solely by overcalls: ", _n_resolved,
                       " (", cast(double)_n_resolved * 100.0 / _n_insertions, "%)");

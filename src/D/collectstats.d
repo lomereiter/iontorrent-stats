@@ -229,6 +229,7 @@ int main(string[] args) {
 
         if (!no_mismatch_stats)
         {
+            processor.mismatch_stats_accumulator.printSummary("/dev/stdout");
             auto fn = buildPath(dir, "mismatch.intensities.dat");
             processor.mismatch_stats_accumulator.printMismatchesReport(fn);
         }
