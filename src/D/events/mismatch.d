@@ -7,13 +7,16 @@ import std.typecons;
 
 /// types of mismatch:
 ///     swap:
-///        XXXXXXXY -> XXXXXXYX
+///        XY -> YX
 ///     
 ///     under/over:
-///        XXXXYYYY -> XXXYYYYY
+///        XXY -> XYY
 ///     
 ///     over/under:
-///        XXXXYYYY -> XXXXXYYY
+///        XYY -> XXY
+///
+///     between two matched bases (includes uo/ou):
+///        XYZ -> XWZ
 struct Mismatch(BaseInfo)
 {
     Nullable!BaseInfo previous_base_info;
@@ -43,7 +46,7 @@ struct Mismatch(BaseInfo)
 
     bool starts_swap() @property const
     {
-        if (previous_base_info.isNull || next_base_info.isNull)
+        if (next_base_info.isNull)
             return false;
 
         // ref:  XXXXXXXY
@@ -51,8 +54,7 @@ struct Mismatch(BaseInfo)
         //             ^
 
         return next_base_info.base == reference_base &&
-               next_base_info.reference_base == base_info.base &&
-               previous_base_info.base == reference_base;
+               next_base_info.reference_base == base_info.base;
     }
 
     bool is_under_over() @property const
@@ -83,6 +85,18 @@ struct Mismatch(BaseInfo)
                previous_base_info.reference_base == previous_base_info.base &&
                reference_base == next_base_info.reference_base &&
                reference_base == next_base_info.base;
+    }
+
+    bool is_between_matches() @property const
+    {
+        // ref:  XYZ
+        // read: XWZ
+
+        if (previous_base_info.isNull || next_base_info.isNull)
+            return false;
+
+        return previous_base_info.base == previous_base_info.reference_base &&
+               next_base_info.base == next_base_info.reference_base;
     }
 }
 

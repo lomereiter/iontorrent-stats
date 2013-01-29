@@ -5,8 +5,6 @@ import constants;
 import std.stdio;
 import std.algorithm : max;
 
-// TODO: classify mismatches into types and collect per-type statistics
-
 class MismatchStatsAccumulator
 {
     private 
@@ -19,10 +17,12 @@ class MismatchStatsAccumulator
         uint[] _uo_over_intensities;
         uint[] _ou_over_intensities;
         uint[] _ou_under_intensities;
+        uint[] _sandwich_intensities;
 
         size_t _n_swaps;
         size_t _n_under_over;
         size_t _n_over_under;
+        size_t _n_sandwich;
     }
 
     this(uint max_intensity_value=MAX_INTENSITY_VALUE)
@@ -34,6 +34,7 @@ class MismatchStatsAccumulator
         _uo_over_intensities = new uint[max_intensity_value];
         _ou_over_intensities = new uint[max_intensity_value];
         _ou_under_intensities = new uint[max_intensity_value];
+        _sandwich_intensities = new uint[max_intensity_value];
     }
 
     static auto merge(MismatchStatsAccumulator acc1, MismatchStatsAccumulator acc2)
@@ -65,9 +66,13 @@ class MismatchStatsAccumulator
         acc._ou_under_intensities = mergeArrays(acc1._ou_under_intensities, 
                                                 acc2._ou_under_intensities);
 
+        acc._sandwich_intensities = mergeArrays(acc1._sandwich_intensities,
+                                                acc2._sandwich_intensities);
+
         acc._n_swaps = acc1._n_swaps + acc2._n_swaps;
         acc._n_under_over = acc1._n_under_over + acc2._n_under_over;
         acc._n_over_under = acc1._n_over_under + acc2._n_over_under;
+        acc._n_sandwich = acc1._n_sandwich + acc2._n_sandwich;
 
         return acc;
     }
@@ -117,6 +122,14 @@ class MismatchStatsAccumulator
                         _ou_over_intensities[iv1] += 1;
                         _ou_under_intensities[iv2] += 1;
                     }
+                } else if (is_between_matches)
+                {
+                    auto iv = base_info.flow_call.intensity_value;
+                    if (iv > 0)
+                    {
+                        ++_n_sandwich;
+                        _sandwich_intensities[iv] += 1;
+                    }
                 }
             }
         }
@@ -128,12 +141,14 @@ class MismatchStatsAccumulator
 
         _file.writeln("######## MISMATCHES #######");
         _file.writeln("# Number of mismatches: ", _n_mismatches);
-        _file.writeln("# Swaps: ", _n_swaps, 
-                      " (", cast(double)_n_swaps * 100.0 / _n_mismatches, "%)");
-        _file.writeln("# Undercall + overcall: ", _n_under_over,
+        _file.writeln("# Swaps (XY -> YX): ", _n_swaps, 
+                      " (", cast(double)_n_swaps * 200.0 / _n_mismatches, "%)");
+        _file.writeln("# Undercall + overcall (XYY -> XXY): ", _n_under_over,
                       " (", cast(double)_n_under_over * 100.0 / _n_mismatches, "%)");
-        _file.writeln("# Overcall + undercall: ", _n_over_under,
+        _file.writeln("# Overcall + undercall (XXY -> XYY): ", _n_over_under,
                       " (", cast(double)_n_over_under * 100.0 / _n_mismatches, "%)");
+        _file.writeln("# Between two matched bases (XYZ -> XWZ), excluding above two cases: ", _n_sandwich,
+                      " (", cast(double)_n_sandwich * 100.0 / _n_mismatches, "%)");
     }
 
     void printMismatchesReport(string filename)
@@ -142,7 +157,7 @@ class MismatchStatsAccumulator
 
         // TODO: description
 
-        _file.writeln("intensity\tcount\tswap.start\tswap.end\tuo.under\tuo.over\tou.over\tou.under");
+        _file.writeln("intensity\tcount\tswap.start\tswap.end\tuo.under\tuo.over\tou.over\tou.under\tsandwich");
 
         foreach (size_t intensity, count; _intensities)
         {
@@ -153,7 +168,8 @@ class MismatchStatsAccumulator
                                          '\t', _uo_under_intensities[intensity],
                                          '\t', _uo_over_intensities[intensity],
                                          '\t', _ou_over_intensities[intensity],
-                                         '\t', _ou_under_intensities[intensity]);
+                                         '\t', _ou_under_intensities[intensity],
+                                         '\t', _sandwich_intensities[intensity]);
         }
     }
 }
